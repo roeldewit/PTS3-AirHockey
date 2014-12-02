@@ -1,11 +1,5 @@
 package Airhockey.Main;
 
-import java.awt.BorderLayout;
-import java.awt.Color;
-import java.awt.Font;
-import java.awt.GridBagConstraints;
-import java.awt.GridBagLayout;
-import java.awt.Insets;
 import java.util.ArrayList;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
@@ -17,12 +11,6 @@ import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.HBoxBuilder;
 import javafx.stage.Stage;
-import javax.swing.JButton;
-import javax.swing.JFrame;
-import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-import javax.swing.JTextArea;
-import javax.swing.JTextField;
 
 /*
  * To change this license header, choose License Headers in Project Properties.
@@ -34,57 +22,51 @@ import javax.swing.JTextField;
  * @author Roel
  */
 public class Chatbox {
-    
+
     private ArrayList<ChatboxLine> lines;
-    JTextField messageBox;
-    JButton sendMessage;
-    JTextArea chatBox;
-    JFrame newFrame = new JFrame("Chatbox");
-    JTextField usernameChooser;
-    JFrame preFrame;
-    
+
     ListView listView;
     TextField textField;
     BorderPane borderPane;
-    
+
     public Chatbox() {
-        
+
     }
-    
+
     public ArrayList<ChatboxLine> getLines() {
         return lines;
     }
-    
+
     public void writeLine(ChatboxLine chatboxLine) {
         lines.add(chatboxLine);
     }
-    
+
     public void display2(Stage primaryStage) {
-        
+
         Stage s = new Stage();
-        
+
         listView = new ListView();
-        
+
         textField = new TextField();
         Button btn = new Button();
         btn.setText("send");
-        
+
         borderPane = new BorderPane();
         HBox bottom = HBoxBuilder.create().children(textField, btn).build();
         borderPane.setCenter(listView);
         borderPane.setBottom(bottom);
-        
+
         btn.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent e) {
                 textField.clear();
             }
         });
-        
+
         s.setScene(new Scene(borderPane, 300, 250));
         s.show();
     }
-    
+
 //    public void display() {
 //        JPanel mainPanel = new JPanel();
 //        mainPanel.setLayout(new BorderLayout());

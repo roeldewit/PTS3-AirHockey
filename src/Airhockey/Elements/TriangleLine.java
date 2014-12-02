@@ -5,6 +5,7 @@ import javafx.scene.Group;
 import javafx.scene.Node;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Line;
+import org.jbox2d.collision.shapes.ChainShape;
 import org.jbox2d.collision.shapes.PolygonShape;
 import org.jbox2d.collision.shapes.Shape;
 import org.jbox2d.common.Vec2;
@@ -32,17 +33,17 @@ public class TriangleLine {
     private final int bottomLineY = 664;
     private final int topY;
 
-    private float positionX;
-    private float positionY;
-
     private float positionXL;
     private float positionYL;
     private float positionXR;
     private float positionYR;
 
+    private float positionXC;
+    private float positionYC;
+
     private BodyType bodyType;
 
-    public TriangleLine(int screenHeight, float positionXL, float positionYL, int positionXR, int positionYR) {
+    public TriangleLine(int screenHeight, float positionXL, float positionYL, float positionXR, float positionYR, float positionXC, float positionYC) {
 //        width = (int) Math.floor(screenHeight * 1.1);  
 //        height = (int) Math.floor(Math.tan(45) * (width / 2));
 //        bottomLineY = (int) Math.floor(screenHeight - (screenHeight * 0.1)); 
@@ -50,70 +51,60 @@ public class TriangleLine {
         topY = bottomLineY - height;
         leftBottomX = 5;
 
-        positionX = Utils.toPosX(leftBottomX);
-        positionY = Utils.toPosY(bottomLineY);
-
+//        positionX = Utils.toPosX(leftBottomX);
+//        positionY = Utils.toPosY(bottomLineY);
         this.positionXL = positionXL;
         this.positionYL = positionYL;
         this.positionXR = positionXR;
         this.positionYR = positionYR;
 
-        node = Create();
+        this.positionXC = positionXC;
+        this.positionYC = positionYC;
+
+        node = createLinePieceAB();
     }
 
-    private Group Create() {
-//        Rotate rotationMatrixLeft = new Rotate(60, A.x, A.y);
-        Group linePieceAB = createLinePieceAB();
-        //Group linePieceBC = createLinePieceBC();
-        //Group linePieceAC = createLinePieceAC();
-
-        Group triangle = new Group(linePieceAB/*,linePieceBC/*,linePieceAC*/);
-        return triangle;
-
-    }
-
-    private Group createLinePieceAB() {
-        // create the vectors for the linePiece
-        Vec2 Ab = new Vec2(Utils.toPosX((int) (leftBottomX + (width * 0.3))), positionY);
-        Vec2 Ba = new Vec2(Utils.toPosX((int) (leftBottomX + (width * 0.7))), positionY);
-        Vec2 B = new Vec2(Utils.toPosX(leftBottomX + width), positionY);
-
+    private Node createLinePieceAB() {
         Vec2 VecL = new Vec2(positionXL, positionYL);
         Vec2 VecR = new Vec2(positionXR, positionYR);
-        Vec2[] vecAbAB = new Vec2[]{VecL, VecR, VecL, VecR};
+        Vec2 VecC = new Vec2(positionXC, positionYC);
+        Vec2[] vecAbAB = new Vec2[]{VecL, VecR, VecC};
 
-        // creates lineAB
-        Group LineAB = new Group();
         //Line AAb = new Line(Utils.toPixelPosX(A.x), Utils.toPixelPosY(A.y), Utils.toPixelPosX(Ab.x), Utils.toPixelPosY(Ab.y));
-        Line ABA = new Line(Utils.toPixelPosX(positionXL) + 50, Utils.toPixelPosY(positionYL), Utils.toPixelPosX(positionXR) + 50, Utils.toPixelPosY(positionYR));
-        ABA.setStroke(Color.PINK);
-        ABA.setStrokeWidth(3.0);
-        //LineAB.getChildren().add(AAb);
-        LineAB.getChildren().add(ABA);
+        Line bottom = new Line(Utils.toPixelPosX(positionXL) + 30, Utils.toPixelPosY(positionYL) - 40, Utils.toPixelPosX(positionXR) + 30, Utils.toPixelPosY(positionYR) - 40);
+        bottom.setStroke(Color.BLACK);
+        bottom.setStrokeWidth(3.0);
 
-        createJboxLinePiece(vecAbAB, 4);
+        Line right = new Line(Utils.toPixelPosX(positionXC) + 40, Utils.toPixelPosY(positionYC) - 10, Utils.toPixelPosX(positionXR) + 40, Utils.toPixelPosY(positionYR) - 10);
+        right.setStroke(Color.BLACK);
+        right.setStrokeWidth(3.0);
 
-        return LineAB;
-    }
+        Group lineGroup = new Group();
+        lineGroup.getChildren().addAll(bottom, right);
 
-    private void handlesJbox(Shape shape, BodyDef bodyDef) {
+        createJboxLinePiece(vecAbAB, 3);
+
+        return lineGroup;
     }
 
     private void createJboxLinePiece(Vec2[] vertices, int verticesSize) {
         BodyDef bd = new BodyDef();
         bd.type = BodyType.KINEMATIC;
-        bd.position.set(vertices[0].x, Utils.toPosY(bottomLineY + 100));
+        bd.position.set(vertices[0].x, vertices[0].y);
 
-        PolygonShape line = new PolygonShape();
-        line.set(vertices, verticesSize);
+//        PolygonShape line = new PolygonShape();
+//        line.set(vertices, verticesSize);
+        ChainShape s = new ChainShape();
+        s.createChain(vertices, verticesSize);
 
         FixtureDef fd = new FixtureDef();
-        fd.shape = line;
+        fd.shape = s;
         fd.density = 0.0f;
         fd.friction = 0.0f;
         fd.restitution = 0.0f;
 
         Body body = Utils.world.createBody(bd);
         body.createFixture(fd);
+        //body.setTransform(null, positionX);
     }
 }

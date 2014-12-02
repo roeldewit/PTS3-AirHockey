@@ -43,11 +43,11 @@ public class Goal {
                 this.color = Color.web("#dd4540");
                 break;
             case "BLUE":
-                rotation = -58;
+                rotation = -60;
                 this.color = Color.web("#4d7fdd");
                 break;
             default:
-                rotation = 58;
+                rotation = 60;
                 this.color = Color.web("#009587");
                 break;
         }
@@ -64,6 +64,8 @@ public class Goal {
         r.setFill(color);
         r.setLayoutX(topLeftX);
         r.setLayoutY(topLeftY);
+        r.setArcWidth(10);
+        r.setArcHeight(10);
 
         RotateTransition t = new RotateTransition(Duration.millis(1), r);
         t.setByAngle(rotation);

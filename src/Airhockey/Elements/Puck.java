@@ -68,7 +68,7 @@ public class Puck {
         fd = new FixtureDef();
         fd.shape = cs;
         fd.density = 0.0f;
-        fd.friction = 0.0f;
+        fd.friction = 1.0f;
         fd.restitution = 1.0f;
 
         /*

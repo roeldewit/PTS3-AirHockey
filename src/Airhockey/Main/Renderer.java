@@ -9,6 +9,7 @@ import Airhockey.Elements.Goal;
 import Airhockey.Elements.LeftEnemyBat;
 import Airhockey.Elements.Puck;
 import Airhockey.Elements.RightEnemyBat;
+import Airhockey.Elements.TriangleLeftLine;
 import Airhockey.Elements.TriangleLine;
 import Airhockey.Properties.PropertiesManager;
 import Airhockey.Utils.KeyListener;
@@ -30,6 +31,11 @@ import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
+import javafx.scene.control.ListView;
+import javafx.scene.control.TextField;
+import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.HBox;
+import javafx.scene.layout.HBoxBuilder;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
@@ -71,7 +77,7 @@ public class Renderer {
     private LeftEnemyBat leftEnemyBat;
     private RightEnemyBat rightEnemyBat;
     private TriangleLine triangle;
-    private TriangleLine triangleLeft;
+    private TriangleLeftLine triangleLeft;
     private TriangleLine triangleRight;
 
     private Goal redGoal;
@@ -84,6 +90,7 @@ public class Renderer {
     private Button startButton;
     private Button testButton;
     private final Group root = new Group();
+    private final Group mainRoot = new Group();
     //private final Group root2 = new Group();
 
     private Label player1NameLabel;
@@ -101,29 +108,35 @@ public class Renderer {
     private Shape puckShape;
 
     private Bat lastHittedBat;
+    private boolean canStopBatLeft;
+    private boolean canStopBatRight;
 
     public Renderer(Stage primaryStage) {
         this.primaryStage = primaryStage;
         game = new Game(this);
         start();
-
     }
 
     public void start() {
         primaryStage.setTitle("Airhockey");
         primaryStage.setFullScreen(false);
         primaryStage.setResizable(false);
-        primaryStage.setWidth(Utils.WIDTH);
+        primaryStage.setWidth(Utils.WIDTH + 250);
         primaryStage.setHeight(Utils.HEIGHT);
         primaryStage.centerOnScreen();
 
         KeyListener keyListener = new KeyListener(this);
         PropertiesManager.saveProperty("LEB-Difficulty", "EASY");
-        PropertiesManager.saveProperty("REB-Difficulty", "HARD");
+        PropertiesManager.saveProperty("REB-Difficulty", "EASY");
 
         //Create a group for holding all objects on the screen
-        final Scene scene = new Scene(root, Utils.WIDTH, Utils.HEIGHT, Color.web("#e0e0e0"));
+        final Scene scene = new Scene(mainRoot, Utils.WIDTH, Utils.HEIGHT, Color.web("#e0e0e0"));
         //final Scene scene2 = new Scene(root2, Utils.WIDTH, Utils.HEIGHT, Color.WHITE);
+
+        BorderPane mainBorderPane = new BorderPane();
+        mainBorderPane.setCenter(root);
+        mainBorderPane.setRight(createChatBox());
+        mainRoot.getChildren().add(mainBorderPane);
 
         Canvas canvas = new Canvas(Utils.WIDTH, Utils.HEIGHT);
         GraphicsContext gc = canvas.getGraphicsContext2D();
@@ -134,12 +147,12 @@ public class Renderer {
         addLabels();
 
 //        //Add ground to the application, this is where balls will land
-//        Utils.addGround(100, 10);
+        Utils.addGround(100, 10);
 //
 ////        //Add left and right walls so balls will not move outside the viewing area.
         Utils.addWall(0, 100, 1, 100); //Left wall
         Utils.addWall(99, 100, 1, 100); //Right wall
-        Utils.addWall(0, 90, 100, 1);
+        Utils.addWall(0, 99, 100, 1);
         /**
          * Set ActionEvent and duration to the KeyFrame. The ActionEvent is trigged when KeyFrame execution is over.
          */
@@ -163,9 +176,6 @@ public class Renderer {
             public void handle(ActionEvent event) {
                 timeline.playFromStart();
                 startButton.setDisable(true);
-
-//                primaryStage.setScene(scene2);
-//                primaryStage.show();
             }
         });
 
@@ -192,6 +202,35 @@ public class Renderer {
 
         primaryStage.setScene(scene);
         primaryStage.show();
+
+        System.out.println(Math.floor(Math.tan(45) * (15 / 2)));
+    }
+
+    private Group createChatBox() {
+        ListView listView = new ListView();
+
+        TextField textField = new TextField();
+        Button btn = new Button();
+        btn.setText("Send");
+
+        BorderPane chatBoxBorderPane = new BorderPane();
+        HBox bottom = HBoxBuilder.create().children(textField, btn).build();
+        chatBoxBorderPane.setCenter(listView);
+        chatBoxBorderPane.setBottom(bottom);
+        chatBoxBorderPane.setMinHeight(Utils.HEIGHT - 40);
+        chatBoxBorderPane.setMaxWidth(244);
+
+        btn.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent e) {
+                textField.clear();
+            }
+        });
+
+        Group chatBoxGroup = new Group();
+        chatBoxGroup.getChildren().add(chatBoxBorderPane);
+
+        return chatBoxGroup;
     }
 
     private class ContactListenerZ implements ContactListener {
@@ -223,7 +262,6 @@ public class Renderer {
         @Override
         public void postSolve(Contact contact, ContactImpulse impulse) {
         }
-
     }
 
     public void setUpGame() {
@@ -237,27 +275,18 @@ public class Renderer {
         bat = new Bat(1, 40, 20, Color.RED);
         leftEnemyBat = new LeftEnemyBat(2, 35, 50, Color.BLUE);
         rightEnemyBat = new RightEnemyBat(3, 65, 50, Color.GREEN);
-//
-//        triangle = new TriangleLine(0, 2.5f, 10, 100, 10);
-//        triangleLeft = new TriangleLine(0, 2.5f, 11, 44, 90);
-//        triangleRight = new TriangleLine(0, 46, 90, 90, 11);
 
-        triangle = new TriangleLine(0, 5f, 10, 80, 10);
-        triangleLeft = new TriangleLine(0, 5f, 11, 44, 95);
-        triangleRight = new TriangleLine(0, 46, 95, 85, 11);
+        triangleLeft = new TriangleLeftLine(0, 3f, 5f, 48f, 95f);
+        triangle = new TriangleLine(0, 3f, 5f, 88f, 5f, 48f, 95f);
 
-        redGoal = new Goal("RED", 420, 670);
-        blueGoal = new Goal("BLUE", 176, 380);
-        greenGoal = new Goal("GREEN", 654, 380);
+        redGoal = new Goal("RED", 410, 670);
+        blueGoal = new Goal("BLUE", 190, 340);
+        greenGoal = new Goal("GREEN", 640, 340);
 
-        //redGoal = new Goal("RED", 420, 630);
-        //blueGoal = new Goal("BLUE", 85, 150);
-        //greenGoal = new Goal("GREEN", 430, 300);
         root.getChildren().add(puck.node);
-
         root.getChildren().add(triangle.node);
         root.getChildren().add(triangleLeft.node);
-        root.getChildren().add(triangleRight.node);
+//        root.getChildren().add(triangleRight.node);
         root.getChildren().addAll(redGoal.node, redGoal.collisionNode);
         root.getChildren().addAll(blueGoal.node, blueGoal.collisionNode);
         root.getChildren().addAll(greenGoal.node, greenGoal.collisionNode);
@@ -269,22 +298,9 @@ public class Renderer {
         blueGoalShape = (Shape) blueGoal.collisionNode;
         greenGoalShape = (Shape) greenGoal.collisionNode;
         puckShape = (Shape) puck.node;
-
-        System.out.println("Xpix(posx0): " + Utils.toPosX(0));
-        System.out.println("Xpix(posx1): " + Utils.toPosX(1));
-        System.out.println("Ypix(posy0): " + Utils.toPosY(0));
-        System.out.println("Ypix(posy1): " + Utils.toPosY(1));
-        System.out.println("");
-        System.out.println("Xpix(posxWIDTH): " + Utils.toPosX(Utils.WIDTH));
-        System.out.println("Xpix(posxHEIGHT): " + Utils.toPosY(Utils.HEIGHT));
-        System.out.println("");
-        System.out.println("Xpos(pix0): " + Utils.toPixelPosX(0));
-        System.out.println("Xpos(pix1): " + Utils.toPixelPosX(1));
-        System.out.println("Ypos(piy0): " + Utils.toPixelPosY(0));
-        System.out.println("Ypos(piy1): " + Utils.toPixelPosY(1));
     }
 
-    public void addLabels() {
+    private void addLabels() {
         popupWindow = new Popup();
         popupWindow.setX(300);
         popupWindow.setY(200);
@@ -318,7 +334,7 @@ public class Renderer {
         root.getChildren().addAll(player1NameLabel, player2NameLabel, player3NameLabel, player1ScoreLabel, player2ScoreLabel, player3ScoreLabel);
     }
 
-    public void checkGoal() {
+    private void checkGoal() {
         Shape redGoalIntersect = Shape.intersect(redGoalShape, puckShape);
         Shape blueGoalIntersect = Shape.intersect(blueGoalShape, puckShape);
         Shape greenGoalIntersect = Shape.intersect(greenGoalShape, puckShape);
@@ -337,7 +353,7 @@ public class Renderer {
         @Override
         public void handle(ActionEvent event) {
             //Create time step. Set Iteration count 8 for velocity and 3 for positions
-            Utils.world.step(1.0f / 60.f, 8, 3);
+            Utils.world.step(1.0f / 40.f, 8, 3);
 
             //Move balls to the new position computed by JBox2D
             puckBody = (Body) puck.node.getUserData();
@@ -360,24 +376,46 @@ public class Renderer {
             puck.node.setLayoutX(xpos);
             puck.node.setLayoutY(ypos);
 
-            if (batSideMovementLeft) {
-                batBody.setLinearVelocity(new Vec2(-25.0f, 0.0f));
-                batSideMovementLeft = false;
-                batSideMovementRight = false;
-            } else if (batSideMovementRight) {
-                batBody.setLinearVelocity(new Vec2(25.0f, 0.0f));
-                batSideMovementRight = false;
-                batSideMovementLeft = false;
-            }
-
             float xposB = Utils.toPixelPosX(batBody.getPosition().x);
             float yposB = Utils.toPixelPosY(batBody.getPosition().y);
+
             bat.setPosition(xposB, yposB);
+
+            controlBatMovement(xposB);
 
             moveLeftEnemyBat(puckBody);
             moveRightEnemyBat(puckBody);
 
-            checkGoal();
+            //checkGoal();
+        }
+    }
+
+    private void controlBatMovement(float xPosB) {
+        if (xPosB > 200) {
+            canStopBatLeft = true;
+            if (batSideMovementLeft) {
+                batBody.setLinearVelocity(new Vec2(-25.0f, 0.0f));
+                batSideMovementLeft = false;
+                batSideMovementRight = false;
+            }
+        } else {
+            if (canStopBatLeft) {
+                stopBatMovement();
+                canStopBatLeft = false;
+            }
+        }
+        if (xPosB < 800) {
+            canStopBatRight = true;
+            if (batSideMovementRight) {
+                batBody.setLinearVelocity(new Vec2(25.0f, 0.0f));
+                batSideMovementRight = false;
+                batSideMovementLeft = false;
+            }
+        } else {
+            if (canStopBatRight) {
+                stopBatMovement();
+                canStopBatRight = false;
+            }
         }
     }
 
@@ -397,7 +435,7 @@ public class Renderer {
         batBody.setLinearVelocity(new Vec2(0.0f, 0.0f));
     }
 
-    private void moveLeftEnemyBat(Body puckBody) {
+    private synchronized void moveLeftEnemyBat(Body puckBody) {
         float puckPositionY = Utils.toPixelPosY(puckBody.getPosition().y);
 
         Body leftEnemyBatBody = (Body) leftEnemyBat.node.getUserData();
@@ -418,7 +456,7 @@ public class Renderer {
         }
     }
 
-    private void moveRightEnemyBat(Body puckBody) {
+    private synchronized void moveRightEnemyBat(Body puckBody) {
         float puckPositionY = Utils.toPixelPosY(puckBody.getPosition().y);
 
         Body rightEnemyBatBody = (Body) rightEnemyBat.node.getUserData();
@@ -439,7 +477,7 @@ public class Renderer {
         }
     }
 
-    public void setTextFields(String field, String value) {
+    protected void setTextFields(String field, String value) {
         switch (field) {
             case "PLAYER1_NAME":
                 player1NameLabel.setText(value);
@@ -466,16 +504,9 @@ public class Renderer {
         double centerPointX = Utils.WIDTH / 2;
         double centerPointY = Utils.HEIGHT / 2;
 
-//        gc.setStroke(Color.BLACK);
-//        gc.setLineWidth(2);
-//
-//        gc.strokeLine(centerPointX, centerPointY, centerPointX, LEFT);
-//        gc.strokeLine(centerPointX, centerPointY, 0, Utils.HEIGHT);
-//        gc.strokeLine(centerPointX, centerPointY, Utils.WIDTH, Utils.HEIGHT);
         gc.setStroke(Color.web("#dd4540"));
         gc.setLineWidth(3);
-
-        gc.strokeOval(centerPointX - 100, centerPointY - 100, 200, 200);
+        gc.strokeOval(centerPointX - 100, centerPointY - 60, 200, 200);
     }
 
     private void showPopupWindow() {
@@ -510,7 +541,7 @@ public class Renderer {
         dialogStage.show();
     }
 
-    public void resetRound(int round) {
+    protected void resetRound(int round) {
         timeline.stop();
 
         Utils.world.destroyBody(puckBody);
@@ -558,21 +589,19 @@ public class Renderer {
         scaleTransition.setToX(8f);
         scaleTransition.setToY(8f);
 
-        Rectangle rect = new Rectangle(0, 0, 0, 0);
-        rect.setWidth(Utils.WIDTH);
-        rect.setHeight(Utils.HEIGHT);
-        rect.setArcWidth(50);
-        rect.setFill(Color.web("#e0e0e0"));
-
-        root.getChildren().add(rect);
-
-        FillTransition ft = new FillTransition(Duration.millis(5000), rect, Color.web("#e0e0e0"), Color.TRANSPARENT);
-
+//        Rectangle rect = new Rectangle(0, 0, 0, 0);
+//        rect.setWidth(Utils.WIDTH);
+//        rect.setHeight(Utils.HEIGHT);
+//        rect.setArcWidth(50);
+//        rect.setFill(Color.web("#e0e0e0"));
+//
+//        root.getChildren().add(rect);
+//
+//        FillTransition ft = new FillTransition(Duration.millis(5000), rect, Color.web("#e0e0e0"), Color.TRANSPARENT);
         ParallelTransition parallelTransition = new ParallelTransition();
         parallelTransition.getChildren().addAll(
                 fadeTransition,
-                scaleTransition,
-                ft
+                scaleTransition
         );
 
         parallelTransition.playFromStart();
@@ -589,7 +618,7 @@ public class Renderer {
 
     }
 
-    public void stop() {
+    protected void stop() {
         Rectangle rect = new Rectangle(0, 0, 0, 0);
         rect.setWidth(Utils.WIDTH);
         rect.setHeight(Utils.HEIGHT);
