@@ -1,6 +1,7 @@
 package Airhockey.Utils;
 
 import Airhockey.User.User;
+import com.sun.org.apache.xalan.internal.xsltc.runtime.BasisLibrary;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -151,16 +152,18 @@ public class Database {
         return succes;
     }
 
-    public void updateScore(User user, int score) throws SQLException, IOException {
+    public void updateRating(User user, int score) throws SQLException, IOException {
         int score1 = score;
         int score2 = 15;
         int score3 = 15;
         int score4 = 15;
         int score5 = 15;
 
+        String username = user.getUsername();
+
         Statement statement = null;
 
-        String query = "SELECT * FROM DBI296122.USERS WHERE \"username\" = '" + user.getUsername() + "'";
+        String query = String.format("SELECT * FROM DBI296122.USERS WHERE \"username\" = '%s'", username);
 
         try {
             initializeConnection();
@@ -176,7 +179,9 @@ public class Database {
 
             double rating = ScoreCalculator.calculateRating(score1, score2, score3, score4, score5);
 
-            user.setRating(rating);
+            query = String.format("UPDATE DBI296122.\"USERS\" SET \"rating\"= %f, \"score1\" = %d, \"score2\" = %d, \"score3\" = %d, \"score4\" = %d, \"score5\" = %d WHERE \"username\" = '%s'", rating, score1, score2, score3, score4, score5, username);
+
+            statement.executeQuery(query);
         } catch (SQLException exception) {
             System.out.println("SQL Exception: " + exception.getMessage());
         } finally {
