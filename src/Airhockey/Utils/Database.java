@@ -190,4 +190,16 @@ public class Database {
             }
         }
     }
+
+    public void insertUser(User user) {
+        throw new UnsupportedOperationException();
+    }
+
+    public User getUser(String username) {
+        throw new UnsupportedOperationException();
+    }
+
+    public void deleteUser(String username) {
+        throw new UnsupportedOperationException();
+    }
 }
