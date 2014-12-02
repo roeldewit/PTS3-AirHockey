@@ -1,25 +1,15 @@
 package Airhockey.Utils;
 
 import Airhockey.User.User;
-import com.sun.org.apache.xalan.internal.xsltc.runtime.BasisLibrary;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.sql.Connection;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
+import java.io.*;
+import java.sql.*;
 import java.util.Properties;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import oracle.jdbc.pool.OracleDataSource;
 
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 /**
+ * Class containing all the methods for communicating with the database
  *
  * @author martijn
  */
@@ -28,6 +18,9 @@ public class Database {
     private Properties properties;
     private Connection connection;
 
+    /**
+     * Constructor
+     */
     public Database() {
         try {
             inputProperties();
@@ -36,6 +29,12 @@ public class Database {
         }
     }
 
+    /**
+     * Input properties
+     *
+     * @throws FileNotFoundException File not found Exception
+     * @throws IOException IO Exception
+     */
     private void inputProperties() throws FileNotFoundException, IOException {
         Properties props = new Properties();
         try (FileInputStream in = new FileInputStream("database.properties")) {
@@ -46,9 +45,16 @@ public class Database {
         configure(props);
     }
 
-    private final boolean configure(Properties props) throws IOException {
+    /**
+     * Configure the database connection
+     *
+     * @param props Properties
+     * @return Boolean indicating if the connection is successful configured
+     * @throws IOException IO Exception
+     */
+    private boolean configure(Properties props) throws IOException {
         try {
-            initializeConnection();
+            initialiseConnection();
             return isCorrectlyConfigured();
         } catch (SQLException ex) {
             System.out.println(ex.getMessage());
@@ -59,7 +65,14 @@ public class Database {
         }
     }
 
-    private void initializeConnection() throws SQLException, FileNotFoundException, IOException {
+    /**
+     * Initialise the connection to the database
+     *
+     * @throws SQLException SQL Exception
+     * @throws FileNotFoundException File not found exception
+     * @throws IOException IO Exception
+     */
+    private void initialiseConnection() throws SQLException, FileNotFoundException, IOException {
         try {
             Class.forName("oracle.jdbc.OracleDriver");
         } catch (ClassNotFoundException ex) {
@@ -81,6 +94,9 @@ public class Database {
         this.connection = ds.getConnection(username, password);
     }
 
+    /**
+     * Close connection
+     */
     private void closeConnection() {
         try {
             if (connection != null) {
@@ -92,6 +108,11 @@ public class Database {
         }
     }
 
+    /**
+     * Check if the database is correctly configured
+     *
+     * @return Boolean indicating if the database is correctly configured
+     */
     private boolean isCorrectlyConfigured() {
         if (properties == null) {
             return false;
@@ -111,6 +132,7 @@ public class Database {
         return true;
     }
 
+    // Method only used for testing purposes
     public boolean loginCheckTest(String username, String password) {
         if (username.equals("Test") && password.equals("1234")) {
             return true;
@@ -119,13 +141,22 @@ public class Database {
         }
     }
 
+    /**
+     * Check if the username corresponds with the given password
+     *
+     * @param username Username
+     * @param password Password
+     * @return Boolean indicating if the log-in is successful
+     * @throws SQLException SQL Exception
+     * @throws IOException IO Exception
+     */
     public boolean loginCheck(String username, String password) throws SQLException, IOException {
         String usernameDB = null;
         String passwordDB = null;
 
         boolean succes = false;
 
-        initializeConnection();
+        initialiseConnection();
 
         Statement stmt = null;
 
@@ -152,6 +183,14 @@ public class Database {
         return succes;
     }
 
+    /**
+     * Update the rating of a user
+     *
+     * @param user User
+     * @param score Score of the last played game
+     * @throws SQLException SQL Exception
+     * @throws IOException IO Exception
+     */
     public void updateRating(User user, int score) throws SQLException, IOException {
         int score1 = score;
         int score2 = 15;
@@ -166,7 +205,7 @@ public class Database {
         String query = String.format("SELECT * FROM DBI296122.USERS WHERE \"username\" = '%s'", username);
 
         try {
-            initializeConnection();
+            initialiseConnection();
             statement = connection.createStatement();
             ResultSet resultSet = statement.executeQuery(query);
 
@@ -191,14 +230,30 @@ public class Database {
         }
     }
 
+    /**
+     * Insert user
+     *
+     * @param user User
+     */
     public void insertUser(User user) {
         throw new UnsupportedOperationException();
     }
 
+    /**
+     * Get user
+     *
+     * @param username Username
+     * @return User
+     */
     public User getUser(String username) {
         throw new UnsupportedOperationException();
     }
 
+    /**
+     * Delete user
+     *
+     * @param username Username
+     */
     public void deleteUser(String username) {
         throw new UnsupportedOperationException();
     }
