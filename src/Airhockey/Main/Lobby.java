@@ -124,7 +124,7 @@ public class Lobby {
         bp.setRight(gridPaneScore);
         
         //Chatbox
-        chatbox.display();
+        chatbox.display2(primaryStage);
 
         //Adding BorderPane to the scene
         Scene scene = new Scene(bp);
