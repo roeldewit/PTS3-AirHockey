@@ -1,6 +1,7 @@
 package Airhockey.Utils;
 
 /**
+ * Class containing the score calculator
  *
  * @author Roel
  */
