@@ -8,11 +8,6 @@ import javafx.scene.shape.Line;
 import javafx.scene.shape.Rectangle;
 import javafx.util.Duration;
 import org.jbox2d.common.Vec2;
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 
 /**
  *
@@ -20,13 +15,13 @@ import org.jbox2d.common.Vec2;
  */
 public class Goal {
 
-    private int topLeftX;
-    private int topLeftY;
-    private int width = 200;
-    private int height = 40;
-    private double rotation;
+    private final int topLeftX;
+    private final int topLeftY;
+    private final int width = 340;
+    private final int height = 40;
+    private final double rotation;
 
-    private Color color;
+    private final Color color;
 
     public Node node;
     public Node collisionNode;
@@ -35,15 +30,13 @@ public class Goal {
         this.topLeftX = topLeftX;
         this.topLeftY = topLeftY;
 
-//        width = (int) Math.floor((double) triangleWidth * 0.4);
-//        height = (int) Math.floor((double) triangleWidth * 0.04);
         switch (color) {
             case "RED":
                 rotation = 0;
                 this.color = Color.web("#dd4540");
                 break;
             case "BLUE":
-                rotation = -60;
+                rotation = -57;
                 this.color = Color.web("#4d7fdd");
                 break;
             default:
@@ -56,6 +49,11 @@ public class Goal {
         this.collisionNode = createCollisionNode();
     }
 
+    /**
+     * Creates the visible part of the goal
+     *
+     * @return
+     */
     private Node createRect() {
         Rectangle r = new Rectangle();
 
@@ -72,16 +70,12 @@ public class Goal {
         t.setAutoReverse(false);
         t.play();
 
-        System.out.println("Value: " + Utils.toPixelPosX(topLeftY));
-        System.out.println("Value2: " + (int) Math.floor(Utils.toPixelPosX(topLeftY)));
-        System.out.println("LAYOUT: " + Utils.pixelEngineToFrame((int) Math.floor(Utils.toPixelPosX(topLeftY))));
-
         return r;
     }
 
-    public Node createCollisionNode() {
-        Vec2 TopLeft = new Vec2(topLeftX, topLeftY + 20);
-        Vec2 TopRight = new Vec2((float) (topLeftX + width), topLeftY + 20);
+    private Node createCollisionNode() {
+        Vec2 TopLeft = new Vec2(topLeftX + 20, topLeftY + 20);
+        Vec2 TopRight = new Vec2((float) (topLeftX + width) - 20, topLeftY + 20);
 
         Line line = new Line(TopLeft.x, TopLeft.y, TopRight.x, TopRight.y);
         line.setStroke(Color.WHITE);

@@ -2,6 +2,8 @@ package Airhockey.Elements;
 
 import Airhockey.Utils.Utils;
 import javafx.scene.Node;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
 import org.jbox2d.collision.shapes.CircleShape;
@@ -11,11 +13,6 @@ import org.jbox2d.dynamics.BodyType;
 import org.jbox2d.dynamics.Fixture;
 import org.jbox2d.dynamics.FixtureDef;
 
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 /**
  *
  * @author Roel
@@ -23,65 +20,71 @@ import org.jbox2d.dynamics.FixtureDef;
 public class Puck {
 
     public Node node;
+    public Node imageNode;
 
-    private float positionX;
-    private float positionY;
+    private final float positionX;
+    private final float positionY;
 
-    private int diameter;
-    private float radius = 20;
+    private float radius = 20f;
 
-    private BodyType bodyType;
-    
+    private final BodyType bodyType;
     public Body body;
     public FixtureDef fd;
 
     public Puck(float positionX, float positionY) {
-        //this.diameter = (int) Math.floor((double) triangleWidth * 0.04);
         this.radius = Utils.BALL_RADIUS;
         this.positionX = positionX;
         this.positionY = positionY;
         this.bodyType = BodyType.DYNAMIC;
+
         node = create();
+        imageNode = createImageNode();
     }
 
     private Node create() {
-        //Create an UI for puck - JavaFX code
         Circle puck = new Circle();
         puck.setRadius(radius);
-        puck.setFill(Color.BLACK); //set look and feel 
-        //ImageView imageView = new ImageView();
+        puck.setFill(Color.BLACK);
 
         puck.setLayoutX(Utils.toPixelPosX(positionX));
         puck.setLayoutY(Utils.toPixelPosY(positionY));
+        puck.setCache(true);
 
-        puck.setCache(true); //Cache this object for better performance
-
-        //Create an JBox2D body defination for puck.
         BodyDef bd = new BodyDef();
         bd.type = bodyType;
         bd.position.set(positionX, positionY);
 
         CircleShape cs = new CircleShape();
-        cs.m_radius = radius * 0.1f;  //We need to convert radius to JBox2D equivalent
+        cs.m_radius = radius * 0.1f;
 
-        // Create a fixture for puck
         fd = new FixtureDef();
         fd.shape = cs;
-        fd.density = 0.0f;
-        fd.friction = 1.0f;
-        fd.restitution = 1.0f;
+        fd.density = 0.5f;
+        fd.friction = 10.0f;
+        fd.restitution = 0.95f;
 
-        /*
-         * Virtual invisible JBox2D body of puck. Bodies have velocity and position. 
-         * Forces, torques, and impulses can be applied to these bodies.
-         */
         body = Utils.world.createBody(bd);
         body.createFixture(fd);
         puck.setUserData(body);
         return puck;
     }
-    
-    public Fixture getFixture(){
+
+    private Node createImageNode() {
+        Image image = new Image(getClass().getResourceAsStream("Images/Puck.png"), radius * 2f, radius * 2f, false, false);
+
+        ImageView imageView = new ImageView(image);
+        imageView.relocate(Utils.toPixelPosX(positionX) - radius, Utils.toPixelPosY(positionY) - radius);
+        return imageView;
+    }
+
+    public void setPosition(float xPosition, float yPosition) {
+        node.setLayoutX(xPosition);
+        node.setLayoutY(yPosition);
+        imageNode.setLayoutX(xPosition - radius);
+        imageNode.setLayoutY(yPosition - radius);
+    }
+
+    public Fixture getFixture() {
         return body.getFixtureList();
     }
 

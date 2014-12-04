@@ -5,13 +5,7 @@ import Airhockey.Elements.Bat;
 import Airhockey.User.Player;
 import Airhockey.User.User;
 import java.util.ArrayList;
-import javafx.application.Application;
 
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 /**
  *
  * @author Roel
@@ -19,7 +13,7 @@ import javafx.application.Application;
 public class Game {
 
     private int id;
-    private int round = 10;
+    private int round = 1;
     private Player owner;
     private Renderer renderer;
     private ArrayList<Player> players;
@@ -87,8 +81,8 @@ public class Game {
             }
         }
 
-        round--;
-        if (round == 0) {
+        round++;
+        if (round == 10) {
             stop();
         } else {
             renderer.resetRound(round);

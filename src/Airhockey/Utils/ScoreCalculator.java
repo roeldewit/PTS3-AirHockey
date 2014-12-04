@@ -1,10 +1,5 @@
 package Airhockey.Utils;
 
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 /**
  *
  * @author Roel
@@ -13,6 +8,7 @@ public class ScoreCalculator {
 
     /**
      * Calculate the rating of a user bases on his five most recent games
+     *
      * @param score1 Most recent score
      * @param score2
      * @param score3

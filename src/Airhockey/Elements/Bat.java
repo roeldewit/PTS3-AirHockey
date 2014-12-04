@@ -13,11 +13,6 @@ import org.jbox2d.dynamics.BodyType;
 import org.jbox2d.dynamics.Fixture;
 import org.jbox2d.dynamics.FixtureDef;
 
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 /**
  *
  * @author Roel
@@ -27,17 +22,16 @@ public class Bat {
     private final int id;
     private final Color color;
 
-    protected float positionX;
-    protected float positionY;
+    protected final float positionX;
+    protected final float positionY;
 
-    protected float diameter;
-    protected float radius = 40;
-    //private final Goal goal;
+    protected final float diameter;
+    protected final float radius;
 
     public Node node;
     public Node imageNode;
 
-    private BodyType bodyType;
+    private final BodyType bodyType;
     private Body body;
 
     public Bat(int id, float positionX, float positionY, Color color) {
@@ -53,53 +47,44 @@ public class Bat {
     }
 
     private Node create() {
-        //Create an UI for bat - JavaFX code
         Circle bat = new Circle();
         bat.setRadius(radius);
-        bat.setFill(Color.TRANSPARENT); //set look and feel 
+        bat.setFill(Color.TRANSPARENT);
 
         bat.setLayoutX(Utils.toPixelPosX(positionX));
         bat.setLayoutY(Utils.toPixelPosY(positionY));
+        bat.setCache(true);
 
-        bat.setCache(true); //Cache this object for better performance
-
-        //Create an JBox2D body defination for bat.
         BodyDef bd = new BodyDef();
         bd.type = bodyType;
         bd.position.set(positionX, positionY);
 
         CircleShape cs = new CircleShape();
-        cs.m_radius = radius * 0.1f;  //We need to convert radius to JBox2D equivalent
+        cs.m_radius = radius * 0.1f;
 
-        // Create a fixture for bat
         FixtureDef fd = new FixtureDef();
         fd.shape = cs;
         fd.density = 0.0f;
         fd.friction = 0.0f;
         fd.restitution = 0.0f;
 
-
-        /*
-         * Virtual invisible JBox2D body of bat. Bodies have velocity and position. 
-         * Forces, torques, and impulses can be applied to these bodies.
-         */
         body = Utils.world.createBody(bd);
         body.createFixture(fd);
         bat.setUserData(body);
         return bat;
     }
 
-    public Node createImageNode() {
+    private Node createImageNode() {
         Image image;
         if (color.equals(Color.RED)) {
-            image = new Image(getClass().getResourceAsStream("Images/RedBatSmall.png"), diameter + 10, diameter + 10, false, false);
+            image = new Image(getClass().getResourceAsStream("Images/RedBatSmaller.png"), diameter, diameter, false, false);
         } else if (color.equals(Color.BLUE)) {
-            image = new Image(getClass().getResourceAsStream("Images/BlueBatSmall.png"), diameter + 10, diameter + 10, false, false);
+            image = new Image(getClass().getResourceAsStream("Images/BlueBatSmaller.png"), diameter, diameter, false, false);
         } else {
-            image = new Image(getClass().getResourceAsStream("Images/GreenBatSmall2.png"), diameter + 10, diameter + 10, false, false);
+            image = new Image(getClass().getResourceAsStream("Images/GreenBatSmaller.png"), diameter, diameter, false, false);
         }
         ImageView imageView = new ImageView(image);
-        imageView.relocate(Utils.toPixelPosX(positionX) - radius - 5, Utils.toPixelPosY(positionY) - radius - 5);
+        imageView.relocate(Utils.toPixelPosX(positionX) - radius, Utils.toPixelPosY(positionY) - radius);
         return imageView;
     }
 

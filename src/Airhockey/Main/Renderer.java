@@ -4,23 +4,12 @@
  */
 package Airhockey.Main;
 
-import Airhockey.Elements.Bat;
-import Airhockey.Elements.Goal;
-import Airhockey.Elements.LeftEnemyBat;
-import Airhockey.Elements.Puck;
-import Airhockey.Elements.RightEnemyBat;
-import Airhockey.Elements.TriangleLeftLine;
-import Airhockey.Elements.TriangleLine;
+import Airhockey.Elements.*;
 import Airhockey.Properties.PropertiesManager;
 import Airhockey.Utils.KeyListener;
 import Airhockey.Utils.Utils;
 import java.util.Random;
-import javafx.animation.FadeTransition;
-import javafx.animation.FillTransition;
-import javafx.animation.KeyFrame;
-import javafx.animation.ParallelTransition;
-import javafx.animation.ScaleTransition;
-import javafx.animation.Timeline;
+import javafx.animation.*;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.geometry.Insets;
@@ -29,10 +18,7 @@ import javafx.scene.Group;
 import javafx.scene.Scene;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
-import javafx.scene.control.Button;
-import javafx.scene.control.Label;
-import javafx.scene.control.ListView;
-import javafx.scene.control.TextField;
+import javafx.scene.control.*;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.HBoxBuilder;
@@ -62,11 +48,7 @@ import org.jbox2d.dynamics.contacts.Contact;
 public class Renderer {
 
     private final Stage primaryStage;
-    private boolean canImpulsBall = true;
-    private boolean batSideMovementLeft = false;
-    private boolean batSideMovementRight = false;
 
-    private Popup popupWindow;
     private Timeline timeline;
 
     public static final int LEFT = 1;
@@ -78,7 +60,8 @@ public class Renderer {
     private RightEnemyBat rightEnemyBat;
     private TriangleLine triangle;
     private TriangleLeftLine triangleLeft;
-    private TriangleLine triangleRight;
+
+    private Bat lastHittedBat;
 
     private Goal redGoal;
     private Goal blueGoal;
@@ -88,10 +71,8 @@ public class Renderer {
     private Body puckBody;
 
     private Button startButton;
-    private Button testButton;
     private final Group root = new Group();
     private final Group mainRoot = new Group();
-    //private final Group root2 = new Group();
 
     private Label player1NameLabel;
     private Label player2NameLabel;
@@ -107,7 +88,9 @@ public class Renderer {
     private Shape greenGoalShape;
     private Shape puckShape;
 
-    private Bat lastHittedBat;
+    private boolean canImpulsBall = true;
+    private boolean batSideMovementLeft = false;
+    private boolean batSideMovementRight = false;
     private boolean canStopBatLeft;
     private boolean canStopBatRight;
 
@@ -125,48 +108,33 @@ public class Renderer {
         primaryStage.setHeight(Utils.HEIGHT);
         primaryStage.centerOnScreen();
 
-        KeyListener keyListener = new KeyListener(this);
-        PropertiesManager.saveProperty("LEB-Difficulty", "EASY");
-        PropertiesManager.saveProperty("REB-Difficulty", "EASY");
+        PropertiesManager.saveProperty("LEB-Difficulty", "HARD");
+        PropertiesManager.saveProperty("REB-Difficulty", "VERY_HARD");
 
-        //Create a group for holding all objects on the screen
         final Scene scene = new Scene(mainRoot, Utils.WIDTH, Utils.HEIGHT, Color.web("#e0e0e0"));
-        //final Scene scene2 = new Scene(root2, Utils.WIDTH, Utils.HEIGHT, Color.WHITE);
+
+        KeyListener keyListener = new KeyListener(this);
+        scene.setOnKeyPressed(keyListener);
+        scene.setOnKeyReleased(keyListener);
+        Utils.world.setContactListener(new ContactListenerZ());
 
         BorderPane mainBorderPane = new BorderPane();
         mainBorderPane.setCenter(root);
         mainBorderPane.setRight(createChatBox());
         mainRoot.getChildren().add(mainBorderPane);
 
-        Canvas canvas = new Canvas(Utils.WIDTH, Utils.HEIGHT);
-        GraphicsContext gc = canvas.getGraphicsContext2D();
-        drawShapes(gc);
-        root.getChildren().add(canvas);
-
-        addItems();
+        drawShapes();
+        createMovableItems();
+        createFixedItems();
         addLabels();
 
-//        //Add ground to the application, this is where balls will land
-        Utils.addGround(100, 10);
-//
-////        //Add left and right walls so balls will not move outside the viewing area.
-        Utils.addWall(0, 100, 1, 100); //Left wall
-        Utils.addWall(99, 100, 1, 100); //Right wall
-        Utils.addWall(0, 99, 100, 1);
-        /**
-         * Set ActionEvent and duration to the KeyFrame. The ActionEvent is trigged when KeyFrame execution is over.
-         */
-        timeline = new Timeline();
-        timeline.setCycleCount(Timeline.INDEFINITE);
-        Duration duration = Duration.seconds(1.0 / 60.0); // Set duration for frame.
+        Duration duration = Duration.seconds(1.0 / 60.0);
         MyHandler eventHandler = new MyHandler();
         KeyFrame frame = new KeyFrame(duration, eventHandler, null, null);
+        timeline = new Timeline();
+        timeline.setCycleCount(Timeline.INDEFINITE);
         timeline.getKeyFrames().add(frame);
 
-        scene.setOnKeyPressed(keyListener);
-        scene.setOnKeyReleased(keyListener);
-
-        //Create button to start simulation.
         startButton = new Button();
         startButton.setLayoutX((Utils.WIDTH / 20));
         startButton.setLayoutY((30));
@@ -176,34 +144,16 @@ public class Renderer {
             public void handle(ActionEvent event) {
                 timeline.playFromStart();
                 startButton.setDisable(true);
-            }
-        });
-
-        //Create button to start simulation.
-        testButton = new Button();
-        testButton.setLayoutX((Utils.WIDTH / 20));
-        testButton.setLayoutY((70));
-        testButton.setText("Test");
-        testButton.setOnAction(new EventHandler<ActionEvent>() {
-            @Override
-            public void handle(ActionEvent event) {
-                //game.setGoal(bat, leftEnemyBat);               
-                showPopupWindow();
-                stop();
+                startButton.setVisible(false);
             }
         });
 
         root.getChildren().add(startButton);
-        root.getChildren().add(testButton);
 
         setUpGame();
 
-        Utils.world.setContactListener(new ContactListenerZ());
-
         primaryStage.setScene(scene);
         primaryStage.show();
-
-        System.out.println(Math.floor(Math.tan(45) * (15 / 2)));
     }
 
     private Group createChatBox() {
@@ -233,79 +183,51 @@ public class Renderer {
         return chatBoxGroup;
     }
 
-    private class ContactListenerZ implements ContactListener {
-
-        @Override
-        public void beginContact(Contact contact) {
-            Fixture fA = contact.getFixtureA();
-            Fixture fB = contact.getFixtureB();
-
-            if (fA == puck.getFixture() || fB == puck.getFixture()) {
-                if (fA == bat.getFixture() || fB == bat.getFixture()) {
-                    lastHittedBat = bat;
-                } else if (fA == leftEnemyBat.getFixture() || fB == leftEnemyBat.getFixture()) {
-                    lastHittedBat = leftEnemyBat;
-                } else if (fA == rightEnemyBat.getFixture() || fB == rightEnemyBat.getFixture()) {
-                    lastHittedBat = rightEnemyBat;
-                }
-            }
-        }
-
-        @Override
-        public void endContact(Contact contact) {
-        }
-
-        @Override
-        public void preSolve(Contact contact, Manifold oldManifold) {
-        }
-
-        @Override
-        public void postSolve(Contact contact, ContactImpulse impulse) {
-        }
-    }
-
     public void setUpGame() {
         game.addBatToPlayer(1, bat);
         game.addBatToPlayer(2, leftEnemyBat);
         game.addBatToPlayer(3, rightEnemyBat);
     }
 
-    private void addItems() {
-        puck = new Puck(50, 50);
-        bat = new Bat(1, 40, 20, Color.RED);
-        leftEnemyBat = new LeftEnemyBat(2, 35, 50, Color.BLUE);
+    private void createMovableItems() {
+        puck = new Puck(50, 45);
+
+        if (batBody != null) {
+            bat = new Bat(1, batBody.getPosition().x, batBody.getPosition().y, Color.RED);
+        } else {
+            bat = new Bat(1, 40, 18, Color.RED);
+        }
+        leftEnemyBat = new LeftEnemyBat(2, 34, 50, Color.BLUE);
         rightEnemyBat = new RightEnemyBat(3, 65, 50, Color.GREEN);
 
-        triangleLeft = new TriangleLeftLine(0, 3f, 5f, 48f, 95f);
-        triangle = new TriangleLine(0, 3f, 5f, 88f, 5f, 48f, 95f);
-
-        redGoal = new Goal("RED", 410, 670);
-        blueGoal = new Goal("BLUE", 190, 340);
-        greenGoal = new Goal("GREEN", 640, 340);
-
-        root.getChildren().add(puck.node);
-        root.getChildren().add(triangle.node);
-        root.getChildren().add(triangleLeft.node);
-//        root.getChildren().add(triangleRight.node);
-        root.getChildren().addAll(redGoal.node, redGoal.collisionNode);
-        root.getChildren().addAll(blueGoal.node, blueGoal.collisionNode);
-        root.getChildren().addAll(greenGoal.node, greenGoal.collisionNode);
+        root.getChildren().addAll(puck.node, puck.imageNode);
         root.getChildren().addAll(bat.node, bat.imageNode);
         root.getChildren().addAll(leftEnemyBat.node, leftEnemyBat.imageNode);
         root.getChildren().addAll(rightEnemyBat.node, rightEnemyBat.imageNode);
 
-        redGoalShape = (Shape) redGoal.collisionNode;
-        blueGoalShape = (Shape) blueGoal.collisionNode;
-        greenGoalShape = (Shape) greenGoal.collisionNode;
         puckShape = (Shape) puck.node;
     }
 
-    private void addLabels() {
-        popupWindow = new Popup();
-        popupWindow.setX(300);
-        popupWindow.setY(200);
-        popupWindow.getContent().addAll(new Circle(25, 25, 50, Color.AQUAMARINE));
+    private void createFixedItems() {
+        triangle = new TriangleLine(0, 3f, 5f, 88f, 5f, 48f, 95f);
+        triangleLeft = new TriangleLeftLine(0, 3f, 5f, 48f, 95f);
 
+        redGoal = new Goal("RED", 340, 670);
+        blueGoal = new Goal("BLUE", 124, 330);
+        greenGoal = new Goal("GREEN", 548, 330);
+
+        root.getChildren().add(triangle.node);
+        root.getChildren().add(triangleLeft.node);
+        root.getChildren().addAll(redGoal.node, redGoal.collisionNode);
+        root.getChildren().addAll(blueGoal.node, blueGoal.collisionNode);
+        root.getChildren().addAll(greenGoal.node, greenGoal.collisionNode);
+
+        redGoalShape = (Shape) redGoal.collisionNode;
+        blueGoalShape = (Shape) blueGoal.collisionNode;
+        greenGoalShape = (Shape) greenGoal.collisionNode;
+    }
+
+    private void addLabels() {
         player1NameLabel = new Label(game.getUsername(1) + ": ");
         player2NameLabel = new Label(game.getUsername(2) + ": ");
         player3NameLabel = new Label(game.getUsername(3) + ": ");
@@ -355,43 +277,44 @@ public class Renderer {
             //Create time step. Set Iteration count 8 for velocity and 3 for positions
             Utils.world.step(1.0f / 40.f, 8, 3);
 
-            //Move balls to the new position computed by JBox2D
             puckBody = (Body) puck.node.getUserData();
             batBody = (Body) bat.node.getUserData();
 
             if (canImpulsBall) {
                 Random randomizer = new Random();
                 int horizontalMovement = randomizer.nextInt(8) - 4;
-                horizontalMovement = (horizontalMovement > -1) ? horizontalMovement + 8 : horizontalMovement - 8;
+                horizontalMovement = (horizontalMovement > -1) ? horizontalMovement + 50 : horizontalMovement - 50;
 
                 int verticalMovement = randomizer.nextInt(8) - 4;
-                verticalMovement = (verticalMovement > -1) ? verticalMovement + 8 : verticalMovement - 8;
+                verticalMovement = (verticalMovement > -1) ? verticalMovement + 50 : verticalMovement - 50;
 
                 puckBody.applyLinearImpulse(new Vec2((float) horizontalMovement, (float) verticalMovement), puckBody.getWorldCenter());
                 canImpulsBall = false;
             }
 
-            float xpos = Utils.toPixelPosX(puckBody.getPosition().x);
-            float ypos = Utils.toPixelPosY(puckBody.getPosition().y);
-            puck.node.setLayoutX(xpos);
-            puck.node.setLayoutY(ypos);
+            float puckBodyPosX = Utils.toPixelPosX(puckBody.getPosition().x);
+            float puckBodyPosY = Utils.toPixelPosY(puckBody.getPosition().y);
+            puck.setPosition(puckBodyPosX, puckBodyPosY);
 
-            float xposB = Utils.toPixelPosX(batBody.getPosition().x);
-            float yposB = Utils.toPixelPosY(batBody.getPosition().y);
+            float batBodyPosX = Utils.toPixelPosX(batBody.getPosition().x);
+            float batBodyPosY = Utils.toPixelPosY(batBody.getPosition().y);
+            bat.setPosition(batBodyPosX, batBodyPosY);
 
-            bat.setPosition(xposB, yposB);
+            controlBatMovement(batBodyPosX);
 
-            controlBatMovement(xposB);
+            moveLeftEnemyBat(puckBodyPosY);
+            moveRightEnemyBat(puckBodyPosY);
 
-            moveLeftEnemyBat(puckBody);
-            moveRightEnemyBat(puckBody);
-
-            //checkGoal();
+            checkGoal();
         }
     }
 
-    private void controlBatMovement(float xPosB) {
-        if (xPosB > 200) {
+    /**
+     *
+     * @param batPositionX
+     */
+    private void controlBatMovement(float batPositionX) {
+        if (batPositionX > 380) {
             canStopBatLeft = true;
             if (batSideMovementLeft) {
                 batBody.setLinearVelocity(new Vec2(-25.0f, 0.0f));
@@ -404,7 +327,7 @@ public class Renderer {
                 canStopBatLeft = false;
             }
         }
-        if (xPosB < 800) {
+        if (batPositionX < 640) {
             canStopBatRight = true;
             if (batSideMovementRight) {
                 batBody.setLinearVelocity(new Vec2(25.0f, 0.0f));
@@ -435,59 +358,40 @@ public class Renderer {
         batBody.setLinearVelocity(new Vec2(0.0f, 0.0f));
     }
 
-    private synchronized void moveLeftEnemyBat(Body puckBody) {
-        float puckPositionY = Utils.toPixelPosY(puckBody.getPosition().y);
-
+    private synchronized void moveLeftEnemyBat(float puckBodyPosY) {
         Body leftEnemyBatBody = (Body) leftEnemyBat.node.getUserData();
         float leftEnemyBatPositionY = Utils.toPixelPosY(leftEnemyBatBody.getPosition().y);
 
-        if (puckPositionY > leftEnemyBatPositionY) {
-            if (leftEnemyBatPositionY < 600) {
+        leftEnemyBat.stop();
+        if (puckBodyPosY > leftEnemyBatPositionY) {
+            if (leftEnemyBatPositionY < 490) {
                 leftEnemyBat.moveDown(puckBody);
-            } else {
-                leftEnemyBat.stop();
             }
-        } else if (puckPositionY < leftEnemyBatPositionY) {
-            if (leftEnemyBatPositionY > 300) {
+        } else if (puckBodyPosY < leftEnemyBatPositionY) {
+            if (leftEnemyBatPositionY > 270) {
                 leftEnemyBat.moveUp(puckBody);
-            } else {
-                leftEnemyBat.stop();
             }
         }
     }
 
-    private synchronized void moveRightEnemyBat(Body puckBody) {
-        float puckPositionY = Utils.toPixelPosY(puckBody.getPosition().y);
-
+    private synchronized void moveRightEnemyBat(float puckBodyPosY) {
         Body rightEnemyBatBody = (Body) rightEnemyBat.node.getUserData();
         float rightEnemyBatPositionY = Utils.toPixelPosY(rightEnemyBatBody.getPosition().y);
 
-        if (puckPositionY - 1 > rightEnemyBatPositionY + 1) {
-            if (rightEnemyBatPositionY < 600) {
+        rightEnemyBat.stop();
+        if (puckBodyPosY - 5 > rightEnemyBatPositionY + 5) {
+            if (rightEnemyBatPositionY < 490) {
                 rightEnemyBat.moveDown(puckBody);
-            } else {
-                rightEnemyBat.stop();
             }
-        } else if (puckPositionY < rightEnemyBatPositionY) {
-            if (rightEnemyBatPositionY > 300) {
+        } else if (puckBodyPosY + 5 < rightEnemyBatPositionY - 5) {
+            if (rightEnemyBatPositionY > 270) {
                 rightEnemyBat.moveUp(puckBody);
-            } else {
-                rightEnemyBat.stop();
             }
         }
     }
 
     protected void setTextFields(String field, String value) {
         switch (field) {
-            case "PLAYER1_NAME":
-                player1NameLabel.setText(value);
-                break;
-            case "PLAYER2_NAME":
-                player2NameLabel.setText(value);
-                break;
-            case "PLAYER3_NAME":
-                player3NameLabel.setText(value);
-                break;
             case "PLAYER1_SCORE":
                 player1ScoreLabel.setText(value);
                 break;
@@ -500,10 +404,16 @@ public class Renderer {
         }
     }
 
-    private void drawShapes(GraphicsContext gc) {
+    private void drawShapes() {
+        Canvas canvas = new Canvas(Utils.WIDTH, Utils.HEIGHT);
+        GraphicsContext gc = canvas.getGraphicsContext2D();
+        root.getChildren().add(canvas);
+
         double centerPointX = Utils.WIDTH / 2;
         double centerPointY = Utils.HEIGHT / 2;
 
+//        gc.setFill(Color.web("#dd4540"));
+//        gc.fillOval(centerPointX - 10, centerPointY + 30, 20, 20);
         gc.setStroke(Color.web("#dd4540"));
         gc.setLineWidth(3);
         gc.strokeOval(centerPointX - 100, centerPointY - 60, 200, 200);
@@ -549,23 +459,14 @@ public class Renderer {
         Utils.world.destroyBody(leftEnemyBat.getBody());
         Utils.world.destroyBody(rightEnemyBat.getBody());
 
-        root.getChildren().removeAll(puck.node);
+        root.getChildren().removeAll(puck.node, puck.imageNode);
         root.getChildren().removeAll(bat.node, bat.imageNode);
         root.getChildren().removeAll(leftEnemyBat.node, leftEnemyBat.imageNode);
         root.getChildren().removeAll(rightEnemyBat.node, rightEnemyBat.imageNode);
 
         newRoundTransition(round);
 
-        puck = new Puck(50, 50);
-        bat = new Bat(1, 40, 20, Color.RED);
-        leftEnemyBat = new LeftEnemyBat(2, 35, 50, Color.BLUE);
-        rightEnemyBat = new RightEnemyBat(3, 65, 50, Color.GREEN);
-
-        puckShape = (Shape) puck.node;
-        root.getChildren().add(puck.node);
-        root.getChildren().addAll(bat.node, bat.imageNode);
-        root.getChildren().addAll(leftEnemyBat.node, leftEnemyBat.imageNode);
-        root.getChildren().addAll(rightEnemyBat.node, rightEnemyBat.imageNode);
+        createMovableItems();
     }
 
     private void newRoundTransition(int round) {
@@ -578,12 +479,12 @@ public class Renderer {
         root.getChildren().add(roundLabel);
 
         FadeTransition fadeTransition
-                = new FadeTransition(Duration.millis(1000), roundLabel);
+                = new FadeTransition(Duration.millis(2000), roundLabel);
         fadeTransition.setFromValue(1.0);
         fadeTransition.setToValue(0.0);
 
         ScaleTransition scaleTransition
-                = new ScaleTransition(Duration.millis(1000), roundLabel);
+                = new ScaleTransition(Duration.millis(2000), roundLabel);
         scaleTransition.setFromX(2f);
         scaleTransition.setFromY(2f);
         scaleTransition.setToX(8f);
@@ -630,5 +531,36 @@ public class Renderer {
         ft.playFromStart();
 
         timeline.stop();
+    }
+
+    private class ContactListenerZ implements ContactListener {
+
+        @Override
+        public void beginContact(Contact contact) {
+            Fixture fA = contact.getFixtureA();
+            Fixture fB = contact.getFixtureB();
+
+            if (fA == puck.getFixture() || fB == puck.getFixture()) {
+                if (fA == bat.getFixture() || fB == bat.getFixture()) {
+                    lastHittedBat = bat;
+                } else if (fA == leftEnemyBat.getFixture() || fB == leftEnemyBat.getFixture()) {
+                    lastHittedBat = leftEnemyBat;
+                } else if (fA == rightEnemyBat.getFixture() || fB == rightEnemyBat.getFixture()) {
+                    lastHittedBat = rightEnemyBat;
+                }
+            }
+        }
+
+        @Override
+        public void endContact(Contact contact) {
+        }
+
+        @Override
+        public void preSolve(Contact contact, Manifold oldManifold) {
+        }
+
+        @Override
+        public void postSolve(Contact contact, ContactImpulse impulse) {
+        }
     }
 }

@@ -13,6 +13,7 @@ import org.jbox2d.dynamics.Body;
 public class RightEnemyBat extends Bat {
 
     private float speed;
+    private final float speedManipulation;
 
     public RightEnemyBat(int id, float postionX, float postionY, Color color) {
         super(id, postionX, postionY, color);
@@ -20,18 +21,19 @@ public class RightEnemyBat extends Bat {
         String difficulty = PropertiesManager.loadProperty("REB-Difficulty");
         switch (difficulty) {
             case "EASY":
-                speed = 4.0f;
+                speed = 5.0f;
                 break;
             case "MEDIUM":
-                speed = 7.0f;
+                speed = 8.0f;
                 break;
             case "HARD":
-                speed = 10.0f;
+                speed = 11.0f;
                 break;
             case "VERY_HARD":
-                speed = 13.0f;
+                speed = 14.0f;
                 break;
         }
+        speedManipulation = speed * 0.55f;
     }
 
     public void moveUp(Body puckBody) {
@@ -42,7 +44,7 @@ public class RightEnemyBat extends Bat {
 
         int vv = (int) Math.abs(verticalVelocity);
         if (vv > speed) {
-            body.setLinearVelocity(new Vec2(-speed, speed));
+            body.setLinearVelocity(new Vec2(-speed + speedManipulation, speed));
         } else {
             body.setLinearVelocity(new Vec2(Utils.toPosX((float) -vv), Utils.toPosY((float) vv)));
         }
@@ -60,7 +62,7 @@ public class RightEnemyBat extends Bat {
 
         int vv = (int) Math.abs(verticalVelocity);
         if (vv > speed) {
-            body.setLinearVelocity(new Vec2(speed, -speed));
+            body.setLinearVelocity(new Vec2(speed - speedManipulation, -speed));
         } else {
             body.setLinearVelocity(new Vec2(Utils.toPosX((float) vv), Utils.toPosY((float) -vv)));
         }
