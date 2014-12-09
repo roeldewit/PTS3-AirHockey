@@ -1,7 +1,3 @@
-/*
- * To change this template, choose Tools | Templates and open the template in
- * the editor.
- */
 package Airhockey.Main;
 
 import Airhockey.Elements.*;
@@ -94,9 +90,9 @@ public class Renderer {
     private boolean canStopBatLeft;
     private boolean canStopBatRight;
 
-    public Renderer(Stage primaryStage) {
+    public Renderer(Stage primaryStage, Game game) {
         this.primaryStage = primaryStage;
-        game = new Game(this);
+        this.game = game;
         start();
     }
 

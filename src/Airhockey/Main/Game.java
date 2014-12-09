@@ -1,10 +1,11 @@
 package Airhockey.Main;
 
-import Airhockey.Utils.ScoreCalculator;
 import Airhockey.Elements.Bat;
 import Airhockey.User.Player;
 import Airhockey.User.User;
+import Airhockey.Utils.ScoreCalculator;
 import java.util.ArrayList;
+import javafx.stage.Stage;
 
 /**
  *
@@ -20,14 +21,18 @@ public class Game {
 //    private ArrayList<Spectator> spectators;
     private Chatbox chatbox;
     private ScoreCalculator scoreCalculator;
+    private boolean isHost;
 
-    public Game(Renderer renderer) {
-        this.renderer = renderer;
+    public Game(Stage primaryStage, boolean isHost) {
+        this.isHost = isHost;
         players = new ArrayList<>();
 
         addPlayer(new User("Henk"));
         addPlayer(new User("Piet"));
         addPlayer(new User("DienMam"));
+
+        renderer = new Renderer(primaryStage, this);
+
         //scoreCalculator = new ScoreCalculator(player1ScoreLabel, player2ScoreLabel, player3ScoreLabel);
     }
 

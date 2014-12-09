@@ -70,7 +70,7 @@ public class Lobby {
         lblDesc.setText("Description: ");
         final TextField txtDesc = new TextField();
         Button btnStartGame = new Button("Start new Game!");
-        
+
         //Action for btnLogin
         btnStartGame.setOnAction(new EventHandler() {
 
@@ -78,7 +78,7 @@ public class Lobby {
             public void handle(Event event) {
 
                 primaryStage.close();
-                Renderer r = new Renderer(primaryStage);
+                Game game = new Game(primaryStage, true);
             }
 
         });
@@ -122,7 +122,7 @@ public class Lobby {
         bp.setLeft(gridPaneGameList);
         bp.setTop(gridPaneDesc);
         bp.setRight(gridPaneScore);
-        
+
         //Chatbox
         chatbox.display2(primaryStage);
 
