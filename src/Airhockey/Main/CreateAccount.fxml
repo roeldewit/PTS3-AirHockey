@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.text.*?>
+<?import javafx.scene.control.*?>
+<?import java.lang.*?>
+<?import javafx.scene.layout.*?>
+
+
+<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="175.0" prefWidth="296.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1">
+   <children>
+      <Label layoutX="60.0" layoutY="8.0" text="Create Account">
+         <font>
+            <Font size="26.0" />
+         </font>
+      </Label>
+      <TextField layoutX="74.0" layoutY="53.0" promptText="Username" />
+      <Button layoutX="74.0" layoutY="136.0" mnemonicParsing="false" prefHeight="25.0" prefWidth="67.0" text="Create" />
+      <Button layoutX="156.0" layoutY="136.0" mnemonicParsing="false" prefHeight="25.0" prefWidth="67.0" text="Cancel" />
+      <PasswordField layoutX="74.0" layoutY="96.0" promptText="Password" />
+   </children>
+</AnchorPane>
