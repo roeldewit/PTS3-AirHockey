@@ -68,7 +68,6 @@ public class Login extends Application {
         pf.setText("password");
         Button btnLogin = new Button("Login");
         final Label lblMessage = new Label();
-        
 
         //Adding Nodes to GridPane layout
         gridPane.add(lblUserName, 0, 0);
