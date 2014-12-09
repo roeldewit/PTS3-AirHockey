@@ -34,7 +34,7 @@ import javafx.stage.Stage;
  */
 public class Login extends Application {
 
-    Database db;
+    Database database;
 
 //    JButton blogin = new JButton("Login");
 //    JPanel panel = new JPanel();

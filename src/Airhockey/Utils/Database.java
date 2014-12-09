@@ -53,16 +53,20 @@ public class Database {
      * @throws IOException IO Exception
      */
     private boolean configure(Properties props) throws IOException {
+        boolean result;
+
         try {
             initialiseConnection();
-            return isCorrectlyConfigured();
+            result = isCorrectlyConfigured();
         } catch (SQLException ex) {
             System.out.println(ex.getMessage());
             this.properties = null;
-            return false;
+            result = false;
         } finally {
             closeConnection();
         }
+
+        return result;
     }
 
     /**
@@ -83,15 +87,16 @@ public class Database {
         if (driver != null) {
             System.setProperty("jdbc.drivers", driver);
         }
+
         String url = this.properties.getProperty("url");
         String username = this.properties.getProperty("username");
         String password = this.properties.getProperty("password");
 
         //this.conn = DriverManager.getConnection(url, username, password);
-        OracleDataSource ds;
-        ds = new OracleDataSource();
-        ds.setURL(url);
-        this.connection = ds.getConnection(username, password);
+        OracleDataSource dataSource;
+        dataSource = new OracleDataSource();
+        dataSource.setURL(url);
+        this.connection = dataSource.getConnection(username, password);
     }
 
     /**
@@ -114,31 +119,25 @@ public class Database {
      * @return Boolean indicating if the database is correctly configured
      */
     private boolean isCorrectlyConfigured() {
+        boolean result = true;
+
         if (properties == null) {
-            return false;
+            result = false;
         }
         if (!properties.containsKey("driver")) {
-            return false;
+            result = false;
         }
         if (!properties.containsKey("url")) {
-            return false;
+            result = false;
         }
         if (!properties.containsKey("username")) {
-            return false;
+            result = false;
         }
         if (!properties.containsKey("password")) {
-            return false;
+            result = false;
         }
-        return true;
-    }
 
-    // Method only used for testing purposes
-    public boolean loginCheckTest(String username, String password) {
-        if (username.equals("Test") && password.equals("1234")) {
-            return true;
-        } else {
-            return false;
-        }
+        return result;
     }
 
     /**
@@ -151,36 +150,37 @@ public class Database {
      * @throws IOException IO Exception
      */
     public boolean loginCheck(String username, String password) throws SQLException, IOException {
-        String usernameDB = null;
-        String passwordDB = null;
+        String usernameDB = "";
+        String passwordDB = "";
 
-        boolean succes = false;
+        boolean success = false;
 
         initialiseConnection();
 
-        Statement stmt = null;
+        Statement statement = null;
 
-        String query = "SELECT USERNAME, PASSWORD FROM DBI296122.AH_USERS";
+        String query = "SELECT username, password FROM DBI296122.USERS";
 
         try {
-            stmt = connection.createStatement();
-            ResultSet rs = stmt.executeQuery(query);
-            while (rs.next()) {
-                usernameDB = rs.getString("USERNAME");
-                passwordDB = rs.getString("PASSWORD");
+            statement = connection.createStatement();
+            ResultSet resultSet = statement.executeQuery(query);
+            while (resultSet.next()) {
+                usernameDB = resultSet.getString("username");
+                passwordDB = resultSet.getString("password");
             }
         } catch (SQLException ex) {
             Logger.getLogger(Database.class.getName()).log(Level.SEVERE, null, ex);
         } finally {
-            if (stmt != null) {
-                stmt.close();
+            if (statement != null) {
+                statement.close();
             }
 
-            if (username == usernameDB && password == passwordDB) {
-                succes = true;
+            if (username.equals(usernameDB) && password.equals(passwordDB)) {
+                success = true;
             }
         }
-        return succes;
+
+        return success;
     }
 
     /**
@@ -234,8 +234,9 @@ public class Database {
      * Insert user
      *
      * @param user User
+     * @return Boolean indicating the result of the delete action
      */
-    public void insertUser(User user) {
+    public boolean insertUser(User user) {
         throw new UnsupportedOperationException();
     }
 
@@ -253,8 +254,9 @@ public class Database {
      * Delete user
      *
      * @param username Username
+     * @return Boolean indicating the result of the delete action
      */
-    public void deleteUser(String username) {
+    public boolean deleteUser(String username) {
         throw new UnsupportedOperationException();
     }
 }
