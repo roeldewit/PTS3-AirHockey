@@ -22,7 +22,6 @@ public class MainControl {
     private ArrayList<Game> games;
     private ScoreCalculator scoreCalculator;
     private Lobby lobby;
-    private ArrayList<Result> results;
 
     public void SetUp() {
         throw new UnsupportedOperationException();
@@ -46,10 +45,6 @@ public class MainControl {
 
     public ArrayList<Game> getGames() {
         return games;
-    }
-
-    public ArrayList<Result> getResults() {
-        return results;
     }
 
     public void createNewGame(String[] args) {

@@ -18,7 +18,6 @@ public class Game {
     private Renderer renderer;
     private ArrayList<Player> players;
 //    private ArrayList<Spectator> spectators;
-    private Result result;
     private Chatbox chatbox;
     private ScoreCalculator scoreCalculator;
 
