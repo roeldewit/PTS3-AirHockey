@@ -69,6 +69,7 @@ public class Login extends Application {
         Button btnLogin = new Button("Login");
         final Label lblMessage = new Label();
 
+        
         //Adding Nodes to GridPane layout
         gridPane.add(lblUserName, 0, 0);
         gridPane.add(txtUserName, 1, 0);
