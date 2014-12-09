@@ -153,34 +153,43 @@ public class Database {
         String usernameDB = "";
         String passwordDB = "";
 
-        boolean success = false;
+        boolean result = false;
 
         initialiseConnection();
 
         Statement statement = null;
+        ResultSet resultSet = null;
 
         String query = "SELECT username, password FROM DBI296122.USERS";
 
         try {
             statement = connection.createStatement();
-            ResultSet resultSet = statement.executeQuery(query);
+            resultSet = statement.executeQuery(query);
             while (resultSet.next()) {
                 usernameDB = resultSet.getString("username");
                 passwordDB = resultSet.getString("password");
             }
+
+            if (username.equals(usernameDB) && password.equals(passwordDB)) {
+                result = true;
+            }
         } catch (SQLException ex) {
             Logger.getLogger(Database.class.getName()).log(Level.SEVERE, null, ex);
+            result = false;
         } finally {
             if (statement != null) {
                 statement.close();
             }
 
-            if (username.equals(usernameDB) && password.equals(passwordDB)) {
-                success = true;
+            if (resultSet != null) {
+                resultSet.close();
             }
+
+            connection.close();
+
         }
 
-        return success;
+        return result;
     }
 
     /**
@@ -202,12 +211,14 @@ public class Database {
 
         Statement statement = null;
 
+        ResultSet resultSet = null;
+
         String query = String.format("SELECT * FROM DBI296122.USERS WHERE \"username\" = '%s'", username);
 
         try {
             initialiseConnection();
             statement = connection.createStatement();
-            ResultSet resultSet = statement.executeQuery(query);
+            resultSet = statement.executeQuery(query);
 
             while (resultSet.next()) {
                 score2 = resultSet.getInt("score1");
@@ -227,17 +238,47 @@ public class Database {
             if (statement != null) {
                 statement.close();
             }
+
+            if (resultSet != null) {
+                resultSet.close();
+            }
+
+            connection.close();
         }
     }
 
     /**
      * Insert user
      *
-     * @param user User
+     * @param username
+     * @param password
      * @return Boolean indicating the result of the delete action
+     * @throws java.sql.SQLException
+     * @throws java.io.IOException
      */
-    public boolean insertUser(User user) {
-        throw new UnsupportedOperationException();
+    public boolean insertUser(String username, String password) throws SQLException, IOException {
+        boolean result = false;
+
+        Statement statement = null;
+
+        String query = String.format("INSERT INTO \"USERS\" (\"username\", \"password\") VALUES ('%s', '%s')", username, password);
+
+        try {
+            initialiseConnection();
+            statement = connection.createStatement();
+            statement.executeQuery(query);
+            result = true;
+        } catch (SQLException exception) {
+            System.out.println("SQL Exception: " + exception.getMessage());
+        } finally {
+            if (statement != null) {
+                statement.close();
+            }
+
+            connection.close();
+        }
+
+        return result;
     }
 
     /**
