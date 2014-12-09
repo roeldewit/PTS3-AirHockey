@@ -173,8 +173,8 @@ public class Database {
             if (username.equals(usernameDB) && password.equals(passwordDB)) {
                 result = true;
             }
-        } catch (SQLException ex) {
-            Logger.getLogger(Database.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (SQLException exception) {
+            System.out.println("SQL Exception: " + exception.getMessage());
             result = false;
         } finally {
             if (statement != null) {
@@ -250,32 +250,35 @@ public class Database {
     /**
      * Insert user
      *
-     * @param username
-     * @param password
-     * @return Boolean indicating the result of the delete action
-     * @throws java.sql.SQLException
-     * @throws java.io.IOException
+     * @param username Username
+     * @param password Password
+     * @return Boolean indicating the result of the insert action
+     * @throws java.sql.SQLException SQL Exception
+     * @throws java.io.IOException IO Exception
      */
     public boolean insertUser(String username, String password) throws SQLException, IOException {
         boolean result = false;
 
-        Statement statement = null;
+        if (getUser(username) == null) {
 
-        String query = String.format("INSERT INTO \"USERS\" (\"username\", \"password\") VALUES ('%s', '%s')", username, password);
+            Statement statement = null;
 
-        try {
-            initialiseConnection();
-            statement = connection.createStatement();
-            statement.executeQuery(query);
-            result = true;
-        } catch (SQLException exception) {
-            System.out.println("SQL Exception: " + exception.getMessage());
-        } finally {
-            if (statement != null) {
-                statement.close();
+            String query = String.format("INSERT INTO \"USERS\" (\"username\", \"password\") VALUES ('%s', '%s')", username, password);
+
+            try {
+                initialiseConnection();
+                statement = connection.createStatement();
+                statement.executeQuery(query);
+                result = true;
+            } catch (SQLException exception) {
+                System.out.println("SQL Exception: " + exception.getMessage());
+            } finally {
+                if (statement != null) {
+                    statement.close();
+                }
+
+                connection.close();
             }
-
-            connection.close();
         }
 
         return result;
@@ -285,10 +288,55 @@ public class Database {
      * Get user
      *
      * @param username Username
-     * @return User
+     * @return User User
+     * @throws java.sql.SQLException SQL Exception
+     * @throws java.io.IOException IO Exception
      */
-    public User getUser(String username) {
-        throw new UnsupportedOperationException();
+    public User getUser(String username) throws SQLException, IOException {
+
+        if (username.isEmpty()) {
+            throw new IllegalArgumentException("Username is empty");
+        }
+
+        User user = null;
+
+        double rating = 0;
+
+        Statement statement = null;
+
+        ResultSet resultSet = null;
+
+        String query = String.format("SELECT \"username\", \"rating\" FROM \"USERS\" WHERE \"username\" = '%s'", username);
+
+        try {
+            initialiseConnection();
+
+            statement = connection.createStatement();
+            resultSet = statement.executeQuery(query);
+
+            while (resultSet.next()) {
+                rating = resultSet.getDouble("rating");
+            }
+
+            if (rating != 0) {
+                user = new User(username);
+                user.setRating(rating);
+            }
+        } catch (SQLException exception) {
+            System.out.println("SQL Exception: " + exception.getMessage());
+        } finally {
+            if (statement != null) {
+                statement.close();
+            }
+
+            if (resultSet != null) {
+                resultSet.close();
+            }
+
+            connection.close();
+        }
+
+        return user;
     }
 
     /**
