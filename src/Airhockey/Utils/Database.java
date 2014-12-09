@@ -150,6 +150,14 @@ public class Database {
      * @throws IOException IO Exception
      */
     public boolean loginCheck(String username, String password) throws SQLException, IOException {
+        if (username.isEmpty()) {
+            throw new IllegalArgumentException("Username is empty");
+        }
+
+        if (password.isEmpty()) {
+            throw new IllegalArgumentException("Password is empty");
+        }
+
         String usernameDB = "";
         String passwordDB = "";
 
@@ -213,7 +221,7 @@ public class Database {
 
         ResultSet resultSet = null;
 
-        String query = String.format("SELECT * FROM DBI296122.USERS WHERE \"username\" = '%s'", username);
+        String query = String.format("SELECT * FROM USERS WHERE \"username\" = '%s'", username);
 
         try {
             initialiseConnection();
@@ -229,7 +237,7 @@ public class Database {
 
             double rating = ScoreCalculator.calculateRating(score1, score2, score3, score4, score5);
 
-            query = String.format("UPDATE DBI296122.\"USERS\" SET \"rating\"= %f, \"score1\" = %d, \"score2\" = %d, \"score3\" = %d, \"score4\" = %d, \"score5\" = %d WHERE \"username\" = '%s'", rating, score1, score2, score3, score4, score5, username);
+            query = String.format("UPDATE \"USERS\" SET \"rating\"= %f, \"score1\" = %d, \"score2\" = %d, \"score3\" = %d, \"score4\" = %d, \"score5\" = %d WHERE \"username\" = '%s'", rating, score1, score2, score3, score4, score5, username);
 
             statement.executeQuery(query);
         } catch (SQLException exception) {
@@ -257,6 +265,14 @@ public class Database {
      * @throws java.io.IOException IO Exception
      */
     public boolean insertUser(String username, String password) throws SQLException, IOException {
+        if (username.isEmpty()) {
+            throw new IllegalArgumentException("Username is empty");
+        }
+
+        if (password.isEmpty()) {
+            throw new IllegalArgumentException("Password is empty");
+        }
+
         boolean result = false;
 
         if (getUser(username) == null) {
@@ -293,7 +309,6 @@ public class Database {
      * @throws java.io.IOException IO Exception
      */
     public User getUser(String username) throws SQLException, IOException {
-
         if (username.isEmpty()) {
             throw new IllegalArgumentException("Username is empty");
         }
@@ -344,8 +359,38 @@ public class Database {
      *
      * @param username Username
      * @return Boolean indicating the result of the delete action
+     * @throws java.sql.SQLException SQL Exception
+     * @throws java.io.IOException IO Exception
      */
-    public boolean deleteUser(String username) {
-        throw new UnsupportedOperationException();
+    public boolean deleteUser(String username) throws SQLException, IOException {
+        if (username.isEmpty()) {
+            throw new IllegalArgumentException("Username is empty");
+        }
+
+        boolean result = false;
+
+        if (getUser(username) != null) {
+            Statement statement = null;
+
+            String query = String.format("DELETE FROM \"USERS\" WHERE \"username\" = '%s'", username);
+
+            try {
+                initialiseConnection();
+
+                statement = connection.createStatement();
+                statement.executeQuery(query);
+                result = true;
+            } catch (SQLException exception) {
+                System.out.println("SQL Exception: " + exception.getMessage());
+            } finally {
+                if (statement != null) {
+                    statement.close();
+                }
+
+                connection.close();
+            }
+        }
+
+        return result;
     }
 }
