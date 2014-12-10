@@ -7,7 +7,6 @@ package Airhockey.Host;
 
 import java.rmi.RemoteException;
 import java.rmi.registry.*;
-import java.rmi.registry.*;
 
 /**
  *

@@ -1,12 +1,12 @@
 package Airhockey.Main;
 
-import Airhockey.Renderer.Renderer;
-import Airhockey.Renderer.IRenderer;
-import Airhockey.Renderer.ClientRenderer;
+import Airhockey.Client.ClientListener;
+import Airhockey.Renderer.*;
 import Airhockey.Elements.Bat;
-import Airhockey.User.Player;
-import Airhockey.User.User;
+import Airhockey.Host.RmiServer;
+import Airhockey.User.*;
 import Airhockey.Utils.ScoreCalculator;
+import java.rmi.RemoteException;
 import java.util.ArrayList;
 import javafx.stage.Stage;
 
@@ -26,6 +26,12 @@ public class Game {
     private ScoreCalculator scoreCalculator;
     private boolean isHost;
 
+    // data of the host
+    private String ipHost;
+    private int port;
+    private ClientListener clientListener;
+    private RmiServer rmiServer;
+
     public Game(Stage primaryStage, boolean isHost) {
         this.isHost = isHost;
         players = new ArrayList<>();
@@ -40,6 +46,40 @@ public class Game {
             renderer = new ClientRenderer(primaryStage, this);
         }
         //scoreCalculator = new ScoreCalculator(player1ScoreLabel, player2ScoreLabel, player3ScoreLabel);
+    }
+
+    /**
+     *Constructor used to start a game as a Host
+     * 
+     * @param primaryStage
+     * @param players
+     * @throws RemoteException
+     */
+    public Game(Stage primaryStage, ArrayList<Player> players) throws RemoteException {
+        this.players = players;
+        this.chatbox = new Chatbox();
+        
+        this.renderer = new Renderer(primaryStage, this);
+        this.rmiServer = new RmiServer(renderer, chatbox);
+    }
+
+    /**
+     * Constructor used to start a game as a client
+     *
+     * @param primaryStage
+     * @param ipHost
+     * @param port
+     * @param players
+     * @throws RemoteException
+     */
+    public Game(Stage primaryStage, String ipHost, int port, ArrayList<Player> players) throws RemoteException {
+        this.ipHost = ipHost;
+        this.port = port;
+        this.players = players;
+        this.owner = players.get(0);
+
+        this.renderer = new ClientRenderer(primaryStage, this);
+        joinGame(ipHost, port);
     }
 
     public void addPlayer(User user) {
@@ -105,5 +145,10 @@ public class Game {
 
     private void stop() {
         //renderer.resetRound();
+    }
+
+    private void joinGame(String iphost, int port) throws RemoteException {
+        this.clientListener = new ClientListener(renderer);
+        this.clientListener.connectToHost(iphost, port);
     }
 }

@@ -82,7 +82,7 @@ public final class ClientRenderer extends BaseRenderer {
     }
 
     public void setItemPosition(Location location) {
-
+        
     }
 
     public void startTimer() {
