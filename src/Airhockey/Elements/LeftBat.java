@@ -2,6 +2,7 @@ package Airhockey.Elements;
 
 import Airhockey.Utils.Utils;
 import Airhockey.Properties.PropertiesManager;
+
 import javafx.scene.paint.Color;
 import org.jbox2d.common.Vec2;
 import org.jbox2d.dynamics.Body;
@@ -10,15 +11,15 @@ import org.jbox2d.dynamics.Body;
  *
  * @author Roel
  */
-public class RightEnemyBat extends Bat {
+public class LeftBat extends Bat {
 
     private float speed;
     private final float speedManipulation;
 
-    public RightEnemyBat(int id, float postionX, float postionY, Color color) {
+    public LeftBat(int id, float postionX, float postionY, Color color) {
         super(id, postionX, postionY, color);
 
-        String difficulty = PropertiesManager.loadProperty("REB-Difficulty");
+        String difficulty = PropertiesManager.loadProperty("LEB-Difficulty");
         switch (difficulty) {
             case "EASY":
                 speed = 5.0f;
@@ -30,10 +31,10 @@ public class RightEnemyBat extends Bat {
                 speed = 11.0f;
                 break;
             case "VERY_HARD":
-                speed = 14.0f;
+                speed = 13.0f;
                 break;
         }
-        speedManipulation = speed * 0.55f;
+        speedManipulation = speed * 0.50f;
     }
 
     public void moveUp(Body puckBody) {
@@ -44,9 +45,9 @@ public class RightEnemyBat extends Bat {
 
         int vv = (int) Math.abs(verticalVelocity);
         if (vv > speed) {
-            body.setLinearVelocity(new Vec2(-speed + speedManipulation, speed));
+            body.setLinearVelocity(new Vec2(speed - speedManipulation, speed));
         } else {
-            body.setLinearVelocity(new Vec2(Utils.toPosX((float) -vv), Utils.toPosY((float) vv)));
+            body.setLinearVelocity(new Vec2(Utils.toPosX((float) vv), Utils.toPosY((float) vv)));
         }
 
         float xpos = Utils.toPixelPosX(body.getPosition().x);
@@ -62,9 +63,9 @@ public class RightEnemyBat extends Bat {
 
         int vv = (int) Math.abs(verticalVelocity);
         if (vv > speed) {
-            body.setLinearVelocity(new Vec2(speed - speedManipulation, -speed));
+            body.setLinearVelocity(new Vec2(-speed + speedManipulation, -speed));
         } else {
-            body.setLinearVelocity(new Vec2(Utils.toPosX((float) vv), Utils.toPosY((float) -vv)));
+            body.setLinearVelocity(new Vec2(Utils.toPosX((float) -vv), Utils.toPosY((float) -vv)));
         }
         float xpos = Utils.toPixelPosX(body.getPosition().x);
         float ypos = Utils.toPixelPosY(body.getPosition().y);

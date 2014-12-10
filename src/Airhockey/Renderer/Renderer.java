@@ -35,13 +35,10 @@ public class Renderer extends BaseRenderer {
 
     private Timeline timeline;
 
-    public static final int LEFT = 1;
-    public static final int RIGHT = 2;
-
     private Puck puck;
     private Bat bat;
-    private LeftEnemyBat leftEnemyBat;
-    private RightEnemyBat rightEnemyBat;
+    private LeftBat leftBat;
+    private RightBat rightBat;
     private TriangleLine triangle;
     private TriangleLeftLine triangleLeft;
 
@@ -51,8 +48,10 @@ public class Renderer extends BaseRenderer {
     private Goal blueGoal;
     private Goal greenGoal;
 
-    private Body batBody;
     private Body puckBody;
+    protected Body batBody;
+    protected Body leftBatBody;
+    protected Body rightBatBody;
 
     private Button startButton;
 
@@ -62,13 +61,14 @@ public class Renderer extends BaseRenderer {
     private Shape puckShape;
 
     private boolean canImpulsBall = true;
-    private boolean batSideMovementLeft = false;
-    private boolean batSideMovementRight = false;
-    private boolean canStopBatLeft;
-    private boolean canStopBatRight;
+
+    private final boolean isMultiplayer = true;
+
+    private final BatController batController;
 
     public Renderer(Stage primaryStage, Game game) {
         super(primaryStage, game);
+        batController = new BatController(this);
         start();
     }
 
@@ -85,7 +85,7 @@ public class Renderer extends BaseRenderer {
 
         final Scene scene = new Scene(mainRoot, Utils.WIDTH, Utils.HEIGHT, Color.web("#e0e0e0"));
 
-        KeyListener keyListener = new KeyListener(this);
+        KeyListener keyListener = new KeyListener(batController);
         scene.setOnKeyPressed(keyListener);
         scene.setOnKeyReleased(keyListener);
         Utils.world.setContactListener(new ContactListenerZ());
@@ -130,8 +130,8 @@ public class Renderer extends BaseRenderer {
 
     public void setUpGame() {
         game.addBatToPlayer(1, bat);
-        game.addBatToPlayer(2, leftEnemyBat);
-        game.addBatToPlayer(3, rightEnemyBat);
+        game.addBatToPlayer(2, leftBat);
+        game.addBatToPlayer(3, rightBat);
     }
 
     private void createMovableItems() {
@@ -142,13 +142,13 @@ public class Renderer extends BaseRenderer {
         } else {
             bat = new Bat(1, 40, 18, Color.RED);
         }
-        leftEnemyBat = new LeftEnemyBat(2, 34, 50, Color.BLUE);
-        rightEnemyBat = new RightEnemyBat(3, 65, 50, Color.GREEN);
+        leftBat = new LeftBat(2, 34, 50, Color.BLUE);
+        rightBat = new RightBat(3, 65, 50, Color.GREEN);
 
         root.getChildren().addAll(puck.node, puck.imageNode);
         root.getChildren().addAll(bat.node, bat.imageNode);
-        root.getChildren().addAll(leftEnemyBat.node, leftEnemyBat.imageNode);
-        root.getChildren().addAll(rightEnemyBat.node, rightEnemyBat.imageNode);
+        root.getChildren().addAll(leftBat.node, leftBat.imageNode);
+        root.getChildren().addAll(rightBat.node, rightBat.imageNode);
 
         puckShape = (Shape) puck.node;
     }
@@ -180,9 +180,9 @@ public class Renderer extends BaseRenderer {
         if (redGoalIntersect.getBoundsInLocal().getWidth() != -1) {
             game.setGoal(lastHittedBat, bat);
         } else if (blueGoalIntersect.getBoundsInLocal().getWidth() != -1) {
-            game.setGoal(lastHittedBat, leftEnemyBat);
+            game.setGoal(lastHittedBat, leftBat);
         } else if (greenGoalIntersect.getBoundsInLocal().getWidth() != -1) {
-            game.setGoal(lastHittedBat, leftEnemyBat);
+            game.setGoal(lastHittedBat, leftBat);
         }
     }
 
@@ -195,6 +195,8 @@ public class Renderer extends BaseRenderer {
 
             puckBody = (Body) puck.node.getUserData();
             batBody = (Body) bat.node.getUserData();
+            leftBatBody = (Body) leftBat.node.getUserData();
+            rightBatBody = (Body) rightBat.node.getUserData();
 
             if (canImpulsBall) {
                 Random randomizer = new Random();
@@ -216,92 +218,49 @@ public class Renderer extends BaseRenderer {
             float batBodyPosY = Utils.toPixelPosY(batBody.getPosition().y);
             bat.setPosition(batBodyPosX, batBodyPosY);
 
-            controlBatMovement(batBodyPosX);
+            batController.controlCenterBat(batBodyPosX);
+            //controlBatMovement(batBodyPosX);
 
-            moveLeftEnemyBat(puckBodyPosY);
-            moveRightEnemyBat(puckBodyPosY);
+            if (isMultiplayer) {
+                batController.controlLeftBat(Utils.toPixelPosY(leftBatBody.getPosition().y));
+                batController.controlRightBat(Utils.toPixelPosY(rightBatBody.getPosition().y));
+            } else {
+                moveLeftEnemyBat(puckBodyPosY);
+                moveRightEnemyBat(puckBodyPosY);
+            }
 
             checkGoal();
         }
     }
 
-    /**
-     *
-     * @param batPositionX
-     */
-    private void controlBatMovement(float batPositionX) {
-        if (batPositionX > 380) {
-            canStopBatLeft = true;
-            if (batSideMovementLeft) {
-                batBody.setLinearVelocity(new Vec2(-25.0f, 0.0f));
-                batSideMovementLeft = false;
-                batSideMovementRight = false;
-            }
-        } else {
-            if (canStopBatLeft) {
-                stopBatMovement();
-                canStopBatLeft = false;
-            }
-        }
-        if (batPositionX < 640) {
-            canStopBatRight = true;
-            if (batSideMovementRight) {
-                batBody.setLinearVelocity(new Vec2(25.0f, 0.0f));
-                batSideMovementRight = false;
-                batSideMovementLeft = false;
-            }
-        } else {
-            if (canStopBatRight) {
-                stopBatMovement();
-                canStopBatRight = false;
-            }
-        }
-    }
-
-    public void startBatMovement(int direction) {
-        if (direction == LEFT) {
-            batSideMovementLeft = true;
-            batSideMovementRight = false;
-        } else if (direction == RIGHT) {
-            batSideMovementRight = true;
-            batSideMovementLeft = false;
-        }
-    }
-
-    public void stopBatMovement() {
-        batSideMovementLeft = false;
-        batSideMovementRight = false;
-        batBody.setLinearVelocity(new Vec2(0.0f, 0.0f));
-    }
-
     private synchronized void moveLeftEnemyBat(float puckBodyPosY) {
-        Body leftEnemyBatBody = (Body) leftEnemyBat.node.getUserData();
+        Body leftEnemyBatBody = (Body) leftBat.node.getUserData();
         float leftEnemyBatPositionY = Utils.toPixelPosY(leftEnemyBatBody.getPosition().y);
 
-        leftEnemyBat.stop();
+        leftBat.stop();
         if (puckBodyPosY > leftEnemyBatPositionY) {
             if (leftEnemyBatPositionY < 490) {
-                leftEnemyBat.moveDown(puckBody);
+                leftBat.moveDown(puckBody);
             }
         } else if (puckBodyPosY < leftEnemyBatPositionY) {
             if (leftEnemyBatPositionY > 270) {
-                leftEnemyBat.moveUp(puckBody);
+                leftBat.moveUp(puckBody);
             }
         }
     }
 
     private synchronized void moveRightEnemyBat(float puckBodyPosY) {
-        Body rightEnemyBatBody = (Body) rightEnemyBat.node.getUserData();
+        Body rightEnemyBatBody = (Body) rightBat.node.getUserData();
         float rightEnemyBatPositionY = Utils.toPixelPosY(rightEnemyBatBody.getPosition().y);
 
-        rightEnemyBat.stop();
+        rightBat.stop();
         if (puckBodyPosY - 5 > rightEnemyBatPositionY + 5) {
             if (rightEnemyBatPositionY < 490) {
-                rightEnemyBat.moveDown(puckBody);
+                rightBat.moveDown(puckBody);
             }
         } else if (puckBodyPosY + 5 < rightEnemyBatPositionY - 5) {
             if (rightEnemyBatPositionY > 270) {
-                rightEnemyBat.moveUp(puckBody);
+                rightBat.moveUp(puckBody);
             }
         }
     }
@@ -312,13 +271,13 @@ public class Renderer extends BaseRenderer {
 
         Utils.world.destroyBody(puckBody);
         Utils.world.destroyBody(batBody);
-        Utils.world.destroyBody(leftEnemyBat.getBody());
-        Utils.world.destroyBody(rightEnemyBat.getBody());
+        Utils.world.destroyBody(leftBat.getBody());
+        Utils.world.destroyBody(rightBat.getBody());
 
         root.getChildren().removeAll(puck.node, puck.imageNode);
         root.getChildren().removeAll(bat.node, bat.imageNode);
-        root.getChildren().removeAll(leftEnemyBat.node, leftEnemyBat.imageNode);
-        root.getChildren().removeAll(rightEnemyBat.node, rightEnemyBat.imageNode);
+        root.getChildren().removeAll(leftBat.node, leftBat.imageNode);
+        root.getChildren().removeAll(rightBat.node, rightBat.imageNode);
 
         newRoundTransition(round);
 
@@ -399,10 +358,10 @@ public class Renderer extends BaseRenderer {
             if (fA == puck.getFixture() || fB == puck.getFixture()) {
                 if (fA == bat.getFixture() || fB == bat.getFixture()) {
                     lastHittedBat = bat;
-                } else if (fA == leftEnemyBat.getFixture() || fB == leftEnemyBat.getFixture()) {
-                    lastHittedBat = leftEnemyBat;
-                } else if (fA == rightEnemyBat.getFixture() || fB == rightEnemyBat.getFixture()) {
-                    lastHittedBat = rightEnemyBat;
+                } else if (fA == leftBat.getFixture() || fB == leftBat.getFixture()) {
+                    lastHittedBat = leftBat;
+                } else if (fA == rightBat.getFixture() || fB == rightBat.getFixture()) {
+                    lastHittedBat = rightBat;
                 }
             }
         }

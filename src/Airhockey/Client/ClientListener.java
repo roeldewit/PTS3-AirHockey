@@ -9,7 +9,7 @@ package Airhockey.Client;
  *
  * @author pieper126
  */
-import Airhockey.Main.Renderer;
+import Airhockey.Renderer.Renderer;
 import Airhockey.Rmi.Location;
 import Airhockey.Rmi.RemotePropertyListener;
 import Airhockey.Rmi.RemotePublisher;
@@ -51,9 +51,9 @@ public class ClientListener extends UnicastRemoteObject implements RemotePropert
     public void propertyChange(PropertyChangeEvent evt) throws RemoteException {
         Location[] locations = (Location[]) evt.getNewValue();
 
-        this.renderer.setPuckLocation(locations[0]);
-        this.renderer.setBatLocation(locations[1]);
-        this.renderer.setLeftEnemyBat(locations[2]);
-        this.renderer.setRightEnemyBat(locations[3]);
+//        this.renderer.setPuckLocation(locations[0]);
+//        this.renderer.setBatLocation(locations[1]);
+//        this.renderer.setLeftEnemyBat(locations[2]);
+//        this.renderer.setRightEnemyBat(locations[3]);
     }
 }

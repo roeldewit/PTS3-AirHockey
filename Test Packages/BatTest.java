@@ -4,6 +4,12 @@
  * and open the template in the editor.
  */
 
+
+
+
+
+
+
 import Airhockey.Elements.Bat;
 import java.awt.Color;
 import org.junit.After;

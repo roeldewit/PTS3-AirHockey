@@ -1,6 +1,6 @@
 package Airhockey.Utils;
 
-import Airhockey.Renderer.Renderer;
+import Airhockey.Renderer.BatController;
 import javafx.event.EventHandler;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
@@ -12,16 +12,16 @@ import javafx.scene.input.KeyEvent;
  */
 public class KeyListener implements EventHandler<KeyEvent> {
 
-    private final Renderer renderer;
+    private final BatController batController;
     private boolean keyAlreadyPressed;
 
     /**
      * Constructor
      *
-     * @param renderer Renderer
+     * @param batController BatController
      */
-    public KeyListener(Renderer renderer) {
-        this.renderer = renderer;
+    public KeyListener(BatController batController) {
+        this.batController = batController;
     }
 
     /**
@@ -37,17 +37,17 @@ public class KeyListener implements EventHandler<KeyEvent> {
             if (event.getEventType().equals(KeyEvent.KEY_PRESSED)) {
                 keyAlreadyPressed = true;
                 if (keyCode == KeyCode.LEFT) {
-                    renderer.startBatMovement(Renderer.LEFT);
+                    batController.startBatMovement(BatController.LEFT);
                 } else if (keyCode == KeyCode.RIGHT) {
-                    renderer.startBatMovement(Renderer.RIGHT);
+                    batController.startBatMovement(BatController.RIGHT);
                 }
             }
         }
         if (event.getEventType().equals(KeyEvent.KEY_RELEASED)) {
             if (keyCode == KeyCode.LEFT) {
-                renderer.stopBatMovement();
+                batController.stopBatMovement();
             } else if (keyCode == KeyCode.RIGHT) {
-                renderer.stopBatMovement();
+                batController.stopBatMovement();
             }
             keyAlreadyPressed = false;
         }
