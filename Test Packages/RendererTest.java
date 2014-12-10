@@ -4,7 +4,7 @@
  * and open the template in the editor.
  */
 
-import Airhockey.Main.Renderer;
+import Airhockey.Renderer.Renderer;
 import Airhockey.Elements.Bat;
 import Airhockey.Main.Game;
 import Airhockey.Elements.Puck;

@@ -1,5 +1,8 @@
 package Airhockey.Main;
 
+import Airhockey.Renderer.Renderer;
+import Airhockey.Renderer.IRenderer;
+import Airhockey.Renderer.ClientRenderer;
 import Airhockey.Elements.Bat;
 import Airhockey.User.Player;
 import Airhockey.User.User;
@@ -16,7 +19,7 @@ public class Game {
     private int id;
     private int round = 1;
     private Player owner;
-    private Renderer renderer;
+    private IRenderer renderer;
     private ArrayList<Player> players;
 //    private ArrayList<Spectator> spectators;
     private Chatbox chatbox;
@@ -31,8 +34,11 @@ public class Game {
         addPlayer(new User("Piet"));
         addPlayer(new User("DienMam"));
 
-        renderer = new Renderer(primaryStage, this);
-
+        if (isHost) {
+            renderer = new Renderer(primaryStage, this);
+        } else {
+            renderer = new ClientRenderer(primaryStage, this);
+        }
         //scoreCalculator = new ScoreCalculator(player1ScoreLabel, player2ScoreLabel, player3ScoreLabel);
     }
 

@@ -32,7 +32,6 @@ public class TriangleLine {
         this.positionYL = positionYL;
         this.positionXR = positionXR;
         this.positionYR = positionYR;
-
         this.positionXC = positionXC;
         this.positionYC = positionYC;
 
@@ -77,5 +76,21 @@ public class TriangleLine {
 
         Body body = Utils.world.createBody(bd);
         body.createFixture(fd);
+    }
+
+    public int getCenterTopY() {
+        return (int) Utils.toPixelPosY(positionYC) - 32;
+    }
+
+    public int getBottomLeftY() {
+        return (int) Utils.toPixelPosY(positionYL) - 36;
+    }
+
+    public int getBottomLeftX() {
+        return (int) Utils.toPixelPosX(positionXL) + 35;
+    }
+
+    public int getBottomRightX() {
+        return (int) Utils.toPixelPosX(positionXR) + 22;
     }
 }

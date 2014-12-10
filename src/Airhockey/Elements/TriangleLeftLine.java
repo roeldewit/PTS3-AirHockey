@@ -64,4 +64,6 @@ public class TriangleLeftLine {
         Body body = Utils.world.createBody(bd);
         body.createFixture(fd);
     }
+
+
 }

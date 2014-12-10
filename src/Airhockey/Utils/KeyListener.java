@@ -1,6 +1,6 @@
 package Airhockey.Utils;
 
-import Airhockey.Main.Renderer;
+import Airhockey.Renderer.Renderer;
 import javafx.event.EventHandler;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;

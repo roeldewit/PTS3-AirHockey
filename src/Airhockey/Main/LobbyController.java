@@ -17,10 +17,10 @@ import javafx.stage.Stage;
  * @author martijn
  */
 public class LobbyController implements Initializable {
-    
+
     @FXML
     Button btStartGame;
-    
+
     Stage primaryStage;
 
     @Override
