@@ -1,9 +1,11 @@
 package Airhockey.Main;
 
+import Airhockey.Client.ClientController;
 import Airhockey.Client.ClientListener;
 import Airhockey.Renderer.*;
 import Airhockey.Elements.Bat;
 import Airhockey.Host.RmiServer;
+import Airhockey.Rmi.Goal;
 import Airhockey.User.*;
 import Airhockey.Utils.ScoreCalculator;
 import java.rmi.RemoteException;
@@ -21,6 +23,9 @@ public class Game {
     private Player owner;
     private IRenderer renderer;
     private ArrayList<Player> players;
+    private ArrayList<User> users;
+    private Player currentPlayer;
+
 //    private ArrayList<Spectator> spectators;
     private Chatbox chatbox;
     private ScoreCalculator scoreCalculator;
@@ -30,6 +35,7 @@ public class Game {
     private String ipHost;
     private int port;
     private ClientListener clientListener;
+    private ClientController clientController;
     private RmiServer rmiServer;
 
     public Game(Stage primaryStage, boolean isHost) {
@@ -40,27 +46,27 @@ public class Game {
         addPlayer(new User("Piet"));
         addPlayer(new User("DienMam"));
 
-        if (isHost) {
-            renderer = new Renderer(primaryStage, this);
-        } else {
-            renderer = new ClientRenderer(primaryStage, this);
-        }
-        //scoreCalculator = new ScoreCalculator(player1ScoreLabel, player2ScoreLabel, player3ScoreLabel);
+        renderer = new Renderer(primaryStage, this, false);
+
     }
 
     /**
-     *Constructor used to start a game as a Host
-     * 
+     * Constructor used to start a game as a Host
+     *
      * @param primaryStage
      * @param players
+     * @param users
      * @throws RemoteException
      */
-    public Game(Stage primaryStage, ArrayList<Player> players) throws RemoteException {
+    public Game(Stage primaryStage, ArrayList<Player> players, ArrayList<User> users) throws RemoteException {
         this.players = players;
+        this.owner = players.get(0);
         this.chatbox = new Chatbox();
-        
-        this.renderer = new Renderer(primaryStage, this);
-        this.rmiServer = new RmiServer(renderer, chatbox);
+        this.users = users;
+        this.currentPlayer = players.get(0);
+
+        this.renderer = new Renderer(primaryStage, this, true);
+        this.rmiServer = new RmiServer((Renderer) renderer, chatbox, users);
     }
 
     /**
@@ -70,16 +76,18 @@ public class Game {
      * @param ipHost
      * @param port
      * @param players
+     * @param currentPlayer
      * @throws RemoteException
      */
-    public Game(Stage primaryStage, String ipHost, int port, ArrayList<Player> players) throws RemoteException {
+    public Game(Stage primaryStage, String ipHost, int port, ArrayList<Player> players, Player currentPlayer) throws RemoteException {
         this.ipHost = ipHost;
         this.port = port;
         this.players = players;
         this.owner = players.get(0);
+        this.currentPlayer = currentPlayer;
 
+        joinGame(ipHost, port, currentPlayer.user.getUsername());
         this.renderer = new ClientRenderer(primaryStage, this);
-        joinGame(ipHost, port);
     }
 
     public void addPlayer(User user) {
@@ -113,42 +121,86 @@ public class Game {
     }
 
     public void setGoal(Bat batWhoMadeGoal, Bat batWhoFailed) {
+        if (owner.equals(currentPlayer)) {
 
-        for (Player player : players) {
-            if (batWhoMadeGoal == null) {
-                if (player.getBat() == batWhoFailed) {
-                    player.downScore();
-                    renderer.setTextFields("PLAYER" + player.getId() + "_SCORE", player.getScore() + "");
+            int i = 0;
+            int idPersonWhoMadeGoal = -1;
+            int idPersonWhoFailed = -1;
+            for (Player player : players) {
+                if (batWhoMadeGoal == null) {
+                    if (player.getBat() == batWhoFailed) {
+                        player.downScore();
+                        renderer.setTextFields("PLAYER" + player.getId() + "_SCORE", player.getScore() + "");
+                    }
+                } else {
+                    if (player.getBat() == batWhoMadeGoal) {
+                        player.upScore();
+                        renderer.setTextFields("PLAYER" + player.getId() + "_SCORE", player.getScore() + "");
+                        idPersonWhoMadeGoal = i;
+                    } else if (player.getBat() == batWhoFailed) {
+                        player.downScore();
+                        renderer.setTextFields("PLAYER" + player.getId() + "_SCORE", player.getScore() + "");
+                        idPersonWhoFailed = i;
+                    }
                 }
-            } else {
-                if (player.getBat() == batWhoMadeGoal) {
-                    player.upScore();
-                    renderer.setTextFields("PLAYER" + player.getId() + "_SCORE", player.getScore() + "");
-                } else if (player.getBat() == batWhoFailed) {
-                    player.downScore();
-                    renderer.setTextFields("PLAYER" + player.getId() + "_SCORE", player.getScore() + "");
+                i++;
+            }
+
+            round++;
+
+            try {
+                rmiServer.getPublisher().informListeners(new Goal(idPersonWhoMadeGoal, idPersonWhoFailed, round));
+            } catch (RemoteException e) {
+                stop();
+            }
+        } else {
+            for (Player player : players) {
+                if (batWhoMadeGoal == null) {
+                    if (player.getBat() == batWhoFailed) {
+                        player.downScore();
+                        renderer.setTextFields("PLAYER" + player.getId() + "_SCORE", player.getScore() + "");
+                    }
+                } else {
+                    if (player.getBat() == batWhoMadeGoal) {
+                        player.upScore();
+                        renderer.setTextFields("PLAYER" + player.getId() + "_SCORE", player.getScore() + "");
+                    } else if (player.getBat() == batWhoFailed) {
+                        player.downScore();
+                        renderer.setTextFields("PLAYER" + player.getId() + "_SCORE", player.getScore() + "");
+                    }
                 }
             }
+
+            round++;
         }
 
-        round++;
         if (round == 10) {
             stop();
         } else {
             renderer.resetRound(round);
         }
+
     }
 
     public String getUsername(int id) {
         return players.get(id - 1).user.getUsername();
     }
 
+    public RmiServer getRmiServer() {
+        return rmiServer;
+    }
+
+    public ClientController getClientController() {
+        return clientController;
+    }
+
     private void stop() {
         //renderer.resetRound();
     }
 
-    private void joinGame(String iphost, int port) throws RemoteException {
-        this.clientListener = new ClientListener(renderer);
+    private void joinGame(String iphost, int port, String username) throws RemoteException {
+        this.clientListener = new ClientListener((ClientRenderer) renderer);
         this.clientListener.connectToHost(iphost, port);
+        this.clientController = new ClientController(ipHost, port, username);
     }
 }

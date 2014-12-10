@@ -9,15 +9,10 @@ package Airhockey.Client;
  *
  * @author pieper126
  */
-<<<<<<< HEAD
-import Airhockey.Renderer.IRenderer;
-import Airhockey.Rmi.*;
-=======
-import Airhockey.Renderer.Renderer;
-import Airhockey.Rmi.Location;
+import Airhockey.Renderer.ClientRenderer;
+import Airhockey.Rmi.GameData;
 import Airhockey.Rmi.RemotePropertyListener;
 import Airhockey.Rmi.RemotePublisher;
->>>>>>> 8094a0231503a23a0461c06dcbf95c94b7e904bf
 import java.beans.PropertyChangeEvent;
 import java.rmi.*;
 import java.rmi.registry.*;
@@ -26,9 +21,9 @@ import java.rmi.server.UnicastRemoteObject;
 public class ClientListener extends UnicastRemoteObject implements RemotePropertyListener {
 
     private RemotePublisher publisher;
-    private final IRenderer renderer;
+    private final ClientRenderer renderer;
 
-    public ClientListener(IRenderer renderer) throws RemoteException {
+    public ClientListener(ClientRenderer renderer) throws RemoteException {
         this.renderer = renderer;
     }
 
@@ -51,14 +46,9 @@ public class ClientListener extends UnicastRemoteObject implements RemotePropert
     }
 
     public void propertyChange(PropertyChangeEvent evt) throws RemoteException {
-        Location[] locations = (Location[]) evt.getNewValue();
-<<<<<<< HEAD
-=======
+        GameData[] gameData = (GameData[]) evt.getNewValue();
+        
+        renderer.update(gameData);
 
-//        this.renderer.setPuckLocation(locations[0]);
-//        this.renderer.setBatLocation(locations[1]);
-//        this.renderer.setLeftEnemyBat(locations[2]);
-//        this.renderer.setRightEnemyBat(locations[3]);
->>>>>>> 8094a0231503a23a0461c06dcbf95c94b7e904bf
     }
 }

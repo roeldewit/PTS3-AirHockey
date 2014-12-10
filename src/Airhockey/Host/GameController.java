@@ -5,53 +5,73 @@
  */
 package Airhockey.Host;
 
-import Airhockey.Elements.LeftEnemyBat;
-import Airhockey.Elements.RightEnemyBat;
 import Airhockey.Main.Chatbox;
-import Airhockey.Renderer.IRenderer;
-import Airhockey.Renderer.Renderer;
-import Airhockey.Rmi.IControlPlayer1;
-import Airhockey.Rmi.IControlPlayer2;
-import Airhockey.Rmi.IControlPlayer3;
-import Airhockey.Rmi.IGameController;
+import Airhockey.Main.ChatboxLine;
+import Airhockey.Renderer.*;
+import Airhockey.Rmi.*;
+import Airhockey.User.User;
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
+import java.util.ArrayList;
 
 /**
  *
  * @author pieper126
  */
-public class GameController extends UnicastRemoteObject implements IGameController, IControlPlayer1, IControlPlayer2 {
+public class GameController extends UnicastRemoteObject implements IChatController, IControlPlayer1, IControlPlayer2, IGameController {
 
-    IRenderer renderer;
+    Renderer renderer;
     Chatbox chatbox;
-    RightEnemyBat rightEnemyBat;
-    LeftEnemyBat leftEnemyBat;
-    
+    BatController batcontroller;
+    ArrayList<User> users;
 
-    public GameController(IRenderer renderer, Chatbox chatbox) throws RemoteException {
+    public GameController(Renderer renderer, Chatbox chatbox, ArrayList<User> users) throws RemoteException {
         this.renderer = renderer;
         this.chatbox = chatbox;
+        batcontroller = renderer.getBatController();
+        this.users = users;
     }
 
+    @Override
     public void movePlayer1BatUp() {
-
+        batcontroller.startLeftBatMovement(BatController.UP);
     }
 
+    @Override
     public void movePlayer1BatDown() {
-        
+        batcontroller.startLeftBatMovement(BatController.DOWN);
     }
 
+    @Override
     public void movePlayer2BatUp() {
-        
+        batcontroller.startRightBatMovement(BatController.UP);
     }
 
+    @Override
     public void movePlayer2BatDown() {
-        
+        batcontroller.startRightBatMovement(BatController.DOWN);
+    }
+
+    @Override
+    public void stopPlayer1Bat() {
+        batcontroller.stopLeftBatMovement();
+    }
+
+    @Override
+    public void stopPlayer2Bat() {
+        batcontroller.stopRightBatMovement();
     }
 
     @Override
     public void writeLine(String username, String Text) {
-        
+        int indexOfUser = users.indexOf(username);
+
+        chatbox.writeLine(new ChatboxLine(Text, users.get(indexOfUser)));
     }
+
+    @Override
+    public int getPlayerNumber(String username) {
+        return users.indexOf(username);
+    }
+
 }

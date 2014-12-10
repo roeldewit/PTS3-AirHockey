@@ -1,9 +1,11 @@
 package Airhockey.Renderer;
 
+import Airhockey.Client.ClientController;
 import Airhockey.Utils.ClientKeyListener;
 import Airhockey.Elements.*;
 import Airhockey.Main.*;
 import Airhockey.Properties.PropertiesManager;
+import Airhockey.Rmi.GameData;
 import Airhockey.Rmi.Location;
 import Airhockey.Utils.Utils;
 import java.util.Timer;
@@ -42,8 +44,15 @@ public final class ClientRenderer extends BaseRenderer {
 
     RendererUtilities rendererUtilities;
 
+    private ClientController clientController;
+
+    private int playerNumber;
+
     public ClientRenderer(Stage primaryStage, Game game) {
         super(primaryStage, game);
+
+        clientController = game.getClientController();
+        playerNumber = clientController.getPlayerNumber();
 
         start();
         rendererUtilities = new RendererUtilities(triangle);
@@ -62,7 +71,7 @@ public final class ClientRenderer extends BaseRenderer {
 
         final Scene scene = new Scene(mainRoot, Utils.WIDTH, Utils.HEIGHT, Color.web("#e0e0e0"));
 
-        ClientKeyListener keyListener = new ClientKeyListener(this);
+        ClientKeyListener keyListener = new ClientKeyListener(this, clientController);
         scene.setOnKeyPressed(keyListener);
         scene.setOnKeyReleased(keyListener);
 
@@ -82,32 +91,31 @@ public final class ClientRenderer extends BaseRenderer {
     }
 
     public void setItemPosition(Location location) {
-        
+
     }
 
-    public void startTimer() {
-        Timer t = new Timer();
-        t.scheduleAtFixedRate(new timerTaskZ(), 0, 1000 / 60);
-    }
-
-    public class timerTaskZ extends TimerTask {
-
-        @Override
-        public void run() {
-
-            Platform.runLater(new Runnable() {
-                @Override
-                public void run() {
-                    leftBat.setPosition(xPosition, yPosition);
-
-                    bat.setPosition(rendererUtilities.batPositionSideToBottom(yPosition), 600);
-                    yPosition++;
-
-                }
-            });
-        }
-    }
-
+//    public void startTimer() {
+//        Timer t = new Timer();
+//        t.scheduleAtFixedRate(new timerTaskZ(), 0, 1000 / 60);
+//    }
+//
+//    public class timerTaskZ extends TimerTask {
+//
+//        @Override
+//        public void run() {
+//
+//            Platform.runLater(new Runnable() {
+//                @Override
+//                public void run() {
+//                    leftBat.setPosition(xPosition, yPosition);
+//
+//                    bat.setPosition(rendererUtilities.batPositionSideToBottom(yPosition), 600);
+//                    yPosition++;
+//
+//                }
+//            });
+//        }
+//    }
     private void createMovableItems() {
         puck = new Puck(50, 45);
 
@@ -189,5 +197,55 @@ public final class ClientRenderer extends BaseRenderer {
 
         FillTransition ft = new FillTransition(Duration.millis(2000), rect, Color.TRANSPARENT, Color.GRAY);
         ft.playFromStart();
+    }
+
+    public void update(GameData[] gamedata) {
+        Airhockey.Rmi.Goal goal = (Airhockey.Rmi.Goal) gamedata[4];
+
+        if (goal != null) {
+            switch (goal.madeBy) {
+                case 0:
+                    player1ScoreLabel.setText((Integer.parseInt(player1ScoreLabel.getText()) - 1) + "");
+                    break;
+                case 1:
+                    player2ScoreLabel.setText((Integer.parseInt(player2ScoreLabel.getText()) - 1) + "");
+                    break;
+                case 2:
+                    player3ScoreLabel.setText((Integer.parseInt(player3ScoreLabel.getText()) - 1) + "");
+                    break;
+            }
+
+            switch (goal.against) {
+                case 0:
+                    player1ScoreLabel.setText((Integer.parseInt(player1ScoreLabel.getText()) + 1) + "");
+                    break;
+                case 1:
+                    player2ScoreLabel.setText((Integer.parseInt(player2ScoreLabel.getText()) + 1) + "");
+                    break;
+                case 2:
+                    player3ScoreLabel.setText((Integer.parseInt(player3ScoreLabel.getText()) + 1) + "");
+                    break;
+            }
+
+            newRoundTransition(goal.round);
+            return;
+        }
+
+        Location locationPuck = (Location) gamedata[0];
+        Location locationBat1 = (Location) gamedata[1];
+        Location locationBat2 = (Location) gamedata[2];
+        Location locationBat3 = (Location) gamedata[3];
+
+        // to do zorgen dat ze omgewisseld worden
+//        if (playerNumber == 1) {
+//            bat.setPosition(rendererUtilities.batPositionSideToBottom((int) locationBat2.y), locationBat2.x);
+//        } else {
+//            bat.setPosition(rendererUtilities.batPositionSideToBottom((int) locationBat3.y), locationBat3.x);
+//        }
+        puck.setPosition(locationPuck.x, locationPuck.y);
+        bat.setPosition(locationBat1.x, locationBat1.y);
+        leftBat.setPosition(locationBat2.x, locationBat2.y);
+        rightBat.setPosition(locationBat3.x, locationBat3.y);
+
     }
 }

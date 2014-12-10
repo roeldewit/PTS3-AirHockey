@@ -1,10 +1,12 @@
 package Airhockey.Host;
 
 import Airhockey.Main.Chatbox;
-import Airhockey.Renderer.IRenderer;
+import Airhockey.Renderer.Renderer;
+import Airhockey.User.User;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
+import java.util.ArrayList;
 
 /**
  *
@@ -27,13 +29,13 @@ public class RmiServer {
     private HostPublisher hostPublisher = null;
     private BasicPublisher publisher = null;
 
-    public RmiServer(IRenderer hostsRenederer, Chatbox chatbox) {
+    public RmiServer(Renderer hostsRenederer, Chatbox chatbox, ArrayList<User> users) {
         // Print port number for registry
         System.out.println("Server: Port number " + portNumber);
 
         // Create game controller
         try {
-            gameController = new GameController(hostsRenederer, chatbox);
+            gameController = new GameController(hostsRenederer, chatbox, users);
             System.out.println("Server: Game controller created");
         } catch (Exception ex) {
             System.out.println("Server: Cannot create game controller");

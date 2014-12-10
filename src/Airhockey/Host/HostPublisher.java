@@ -67,8 +67,29 @@ public class HostPublisher {
         }
     }
 
+    public void informListeners(Goal goal) throws RemoteException {
+        oldGameData = gameData.clone();
+
+        gameData[0] = null;
+        gameData[1] = null;
+        gameData[2] = null;
+        gameData[3] = null;
+        gameData[4] = goal;
+
+        try {
+            publisher.inform(this, "gameData", oldGameData, gameData);
+            consectivePackagesLoss = 0;
+        } catch (RemoteException e) {
+            consectivePackagesLoss++;
+            if (consectivePackagesLoss == 12000) {
+                throw new RemoteException();
+            }
+            informListeners(goal);
+        }
+    }
+
     public void informListeners(SerializableChatBoxLine[] chatboxlines) throws RemoteException {
-        oldChatboxlines =  chatboxlines.clone();
+        oldChatboxlines = chatboxlines.clone();
 
         try {
             publisher.inform(this, "chatboxLines", oldChatboxlines, chatboxlines);

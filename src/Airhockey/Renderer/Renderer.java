@@ -1,10 +1,12 @@
 package Airhockey.Renderer;
 
 import Airhockey.Elements.*;
+import Airhockey.Host.RmiServer;
 import Airhockey.Main.Game;
 import Airhockey.Properties.PropertiesManager;
 import Airhockey.Utils.KeyListener;
 import Airhockey.Utils.Utils;
+import java.rmi.RemoteException;
 import java.util.Random;
 import javafx.animation.*;
 import javafx.event.ActionEvent;
@@ -62,13 +64,21 @@ public class Renderer extends BaseRenderer {
 
     private boolean canImpulsBall = true;
 
-    private final boolean isMultiplayer = true;
+    private final boolean isMultiplayer;
 
     private final BatController batController;
 
-    public Renderer(Stage primaryStage, Game game) {
+    private RmiServer rmiServer;
+
+    public Renderer(Stage primaryStage, Game game, boolean isMultiplayer) {
         super(primaryStage, game);
         batController = new BatController(this);
+        this.isMultiplayer = true;
+
+        if (isMultiplayer) {
+            rmiServer = game.getRmiServer();
+        }
+
         start();
     }
 
@@ -224,6 +234,13 @@ public class Renderer extends BaseRenderer {
             if (isMultiplayer) {
                 batController.controlLeftBat(Utils.toPixelPosY(leftBatBody.getPosition().y));
                 batController.controlRightBat(Utils.toPixelPosY(rightBatBody.getPosition().y));
+
+                try {
+                    rmiServer.getPublisher().informListeners(puckBodyPosX, puckBodyPosY, batBodyPosX, batBodyPosY, leftBatBody, rightBatBody, null);
+                } catch (RemoteException e) {
+                    System.err.println(e.getMessage());
+                }
+
             } else {
                 moveLeftEnemyBat(puckBodyPosY);
                 moveRightEnemyBat(puckBodyPosY);
@@ -377,5 +394,9 @@ public class Renderer extends BaseRenderer {
         @Override
         public void postSolve(Contact contact, ContactImpulse impulse) {
         }
+    }
+
+    public BatController getBatController() {
+        return batController;
     }
 }

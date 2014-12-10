@@ -33,4 +33,9 @@ public class User {
     public void setRating(double rating) {
         this.rating = rating;
     }
+
+    @Override
+    public boolean equals(Object o) {
+        return this.username.equals(((User)o).username);
+    }
 }

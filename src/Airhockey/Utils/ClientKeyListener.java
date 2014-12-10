@@ -1,8 +1,7 @@
 package Airhockey.Utils;
 
+import Airhockey.Client.ClientController;
 import Airhockey.Renderer.ClientRenderer;
-import Airhockey.Utils.*;
-import Airhockey.Renderer.Renderer;
 import javafx.event.EventHandler;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
@@ -12,9 +11,11 @@ public class ClientKeyListener implements EventHandler<KeyEvent> {
     private final ClientRenderer renderer;
     //private GameController gameController;
     private boolean keyAlreadyPressed;
+    private ClientController clientcontroller;
 
-    public ClientKeyListener(ClientRenderer renderer) {
+    public ClientKeyListener(ClientRenderer renderer, ClientController clientController) {
         this.renderer = renderer;
+        this.clientcontroller = clientController;
     }
 
     @Override
@@ -25,19 +26,19 @@ public class ClientKeyListener implements EventHandler<KeyEvent> {
             if (event.getEventType().equals(KeyEvent.KEY_PRESSED)) {
                 keyAlreadyPressed = true;
                 if (keyCode == KeyCode.LEFT) {
-                    //renderer.startBatMovement(Renderer.LEFT);
+                    clientcontroller.moveLeft();
                 } else if (keyCode == KeyCode.RIGHT) {
-                    //renderer.startBatMovement(Renderer.RIGHT);
-                    renderer.startTimer();
+                    clientcontroller.moveRight();
+//                    renderer.startTimer();
                 }
             }
         }
         if (event.getEventType().equals(KeyEvent.KEY_RELEASED)) {
             System.out.println("sfasdf");
             if (keyCode == KeyCode.LEFT) {
-                //renderer.stopBatMovement();
+                clientcontroller.stopMovement();
             } else if (keyCode == KeyCode.RIGHT) {
-                //renderer.stopBatMovement();
+                clientcontroller.stopMovement();
             }
             keyAlreadyPressed = false;
         }
