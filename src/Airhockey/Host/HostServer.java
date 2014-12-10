@@ -37,7 +37,7 @@ public class HostServer {
             this.registry = null;
         }
         try {
-            this.registry.rebind("GameController", this.gameController);
+            //this.registry.rebind("GameController", this.gameController);
         } catch (Exception ex) {
             System.out.println("Server: Cannot bind game controller");
             System.out.println("Server: RemoteException: " + ex.getMessage());
