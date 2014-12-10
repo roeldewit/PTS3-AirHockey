@@ -42,8 +42,8 @@ public class Bat {
         this.bodyType = BodyType.KINEMATIC;
         this.radius = 40;
         this.diameter = radius * 2.0f;
-        node = create();
-        imageNode = createImageNode();
+        this.node = create();
+        this.imageNode = createImageNode();
     }
 
     private Node create() {
