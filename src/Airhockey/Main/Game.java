@@ -29,7 +29,9 @@ public class Game {
 //    private ArrayList<Spectator> spectators;
     private Chatbox chatbox;
     private ScoreCalculator scoreCalculator;
+
     private boolean isHost;
+    private boolean isMultiplayer;
 
     // data of the host
     private String ipHost;
@@ -38,15 +40,16 @@ public class Game {
     private ClientController clientController;
     private RmiServer rmiServer;
 
-    public Game(Stage primaryStage, boolean isHost) {
+    public Game(Stage primaryStage, boolean isHost, boolean isMultiplayer) {
         this.isHost = isHost;
+        this.isMultiplayer = isMultiplayer;
         players = new ArrayList<>();
 
         addPlayer(new User("Henk"));
         addPlayer(new User("Piet"));
         addPlayer(new User("DienMam"));
 
-        renderer = new Renderer(primaryStage, this, false);
+        renderer = new Renderer(primaryStage, this, isMultiplayer);
 
     }
 
@@ -112,66 +115,45 @@ public class Game {
          dan zijn/haar huidige rating, wordt deze ratingscore ook niet verwerkt*/
     }
 
-    public void addBatToPlayer(int playerId, Bat bat) {
+    public void addPlayerToBat(int playerId, Bat bat) {
         for (Player player : players) {
             if (player.getId() == playerId) {
-                player.setBat(bat);
+                System.out.println("pi:" + playerId);
+                bat.setPlayer(player);
+                //bat.getPlayer();
+                System.out.println("bp: " +bat.getPlayer());
             }
         }
     }
 
     public void setGoal(Bat batWhoMadeGoal, Bat batWhoFailed) {
-        if (owner.equals(currentPlayer)) {
+        System.out.println("o: " + owner);
+        System.out.println("c: " + currentPlayer);
 
-            int i = 0;
-            int idPersonWhoMadeGoal = -1;
-            int idPersonWhoFailed = -1;
-            for (Player player : players) {
-                if (batWhoMadeGoal == null) {
-                    if (player.getBat() == batWhoFailed) {
-                        player.downScore();
-                        renderer.setTextFields("PLAYER" + player.getId() + "_SCORE", player.getScore() + "");
-                    }
-                } else {
-                    if (player.getBat() == batWhoMadeGoal) {
-                        player.upScore();
-                        renderer.setTextFields("PLAYER" + player.getId() + "_SCORE", player.getScore() + "");
-                        idPersonWhoMadeGoal = i;
-                    } else if (player.getBat() == batWhoFailed) {
-                        player.downScore();
-                        renderer.setTextFields("PLAYER" + player.getId() + "_SCORE", player.getScore() + "");
-                        idPersonWhoFailed = i;
-                    }
-                }
-                i++;
-            }
+        Player playerWhoFailed = batWhoFailed.getPlayer();
+        playerWhoFailed.downScore();
+        renderer.setTextFields("PLAYER" + playerWhoFailed.getId() + "_SCORE", playerWhoFailed.getScore() + "");
 
-            round++;
+        if (batWhoMadeGoal != null) {
+            Player playerWhoMadeGoal = batWhoMadeGoal.getPlayer();
+            playerWhoMadeGoal.upScore();
+            renderer.setTextFields("PLAYER" + playerWhoMadeGoal.getId() + "_SCORE", playerWhoMadeGoal.getScore() + "");
+        }
 
-            try {
-                rmiServer.getPublisher().informListeners(new Goal(idPersonWhoMadeGoal, idPersonWhoFailed, round));
-            } catch (RemoteException e) {
-                stop();
-            }
-        } else {
-            for (Player player : players) {
-                if (batWhoMadeGoal == null) {
-                    if (player.getBat() == batWhoFailed) {
-                        player.downScore();
-                        renderer.setTextFields("PLAYER" + player.getId() + "_SCORE", player.getScore() + "");
+        round++;
+
+        if (isMultiplayer) {
+            if (owner.equals(currentPlayer)) {
+                try {
+                    if (batWhoMadeGoal == null) {
+                        rmiServer.getPublisher().informListeners(new Goal(-99, playerWhoFailed.getId() - 1, round));
+                    } else {
+                        rmiServer.getPublisher().informListeners(new Goal(batWhoMadeGoal.getPlayer().getId() - 1, playerWhoFailed.getId() - 1, round));
                     }
-                } else {
-                    if (player.getBat() == batWhoMadeGoal) {
-                        player.upScore();
-                        renderer.setTextFields("PLAYER" + player.getId() + "_SCORE", player.getScore() + "");
-                    } else if (player.getBat() == batWhoFailed) {
-                        player.downScore();
-                        renderer.setTextFields("PLAYER" + player.getId() + "_SCORE", player.getScore() + "");
-                    }
+                } catch (RemoteException e) {
+                    stop();
                 }
             }
-
-            round++;
         }
 
         if (round == 10) {

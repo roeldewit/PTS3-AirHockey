@@ -31,7 +31,7 @@ public class LobbyController implements Initializable {
     public void startGame() {
         primaryStage = (Stage) btStartGame.getScene().getWindow();
         primaryStage.close();
-        Game g = new Game(primaryStage, true);
+        Game g = new Game(primaryStage, false, false);
     }
 
 }

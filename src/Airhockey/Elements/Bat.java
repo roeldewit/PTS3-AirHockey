@@ -1,5 +1,6 @@
 package Airhockey.Elements;
 
+import Airhockey.User.Player;
 import Airhockey.Utils.Utils;
 import javafx.scene.Node;
 import javafx.scene.image.Image;
@@ -20,6 +21,7 @@ import org.jbox2d.dynamics.FixtureDef;
 public class Bat {
 
     private final int id;
+    private Player player;
     private final Color color;
 
     protected final float positionX;
@@ -109,5 +111,13 @@ public class Bat {
 
     public Body getBody() {
         return body;
+    }
+    
+    public Player getPlayer(){
+        return player;
+    }
+    
+    public void setPlayer(Player player){
+        this.player = player;
     }
 }

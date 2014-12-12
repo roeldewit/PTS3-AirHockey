@@ -73,7 +73,7 @@ public class Renderer extends BaseRenderer {
     public Renderer(Stage primaryStage, Game game, boolean isMultiplayer) {
         super(primaryStage, game);
         batController = new BatController(this);
-        this.isMultiplayer = true;
+        this.isMultiplayer = false;
 
         if (isMultiplayer) {
             rmiServer = game.getRmiServer();
@@ -132,16 +132,16 @@ public class Renderer extends BaseRenderer {
 
         root.getChildren().add(startButton);
 
-        setUpGame();
+        linkPlayersToBats();
 
         primaryStage.setScene(scene);
         primaryStage.show();
     }
 
-    public void setUpGame() {
-        game.addBatToPlayer(1, bat);
-        game.addBatToPlayer(2, leftBat);
-        game.addBatToPlayer(3, rightBat);
+    public void linkPlayersToBats() {
+        game.addPlayerToBat(1, bat);
+        game.addPlayerToBat(2, leftBat);
+        game.addPlayerToBat(3, rightBat);
     }
 
     private void createMovableItems() {
@@ -299,6 +299,7 @@ public class Renderer extends BaseRenderer {
         newRoundTransition(round);
 
         createMovableItems();
+        linkPlayersToBats();
     }
 
     private void newRoundTransition(int round) {

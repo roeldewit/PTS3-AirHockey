@@ -10,7 +10,6 @@ public class Player {
 
     private int id;
     private int score = 20;
-    private Bat bat;
     public User user;
 
     public Player(int id, User user) {
@@ -26,16 +25,8 @@ public class Player {
         score--;
     }
 
-    public void setBat(Bat bat) {
-        this.bat = bat;
-    }
-
     public void setScore(int score) {
         this.score = score;
-    }
-
-    public Bat getBat() {
-        return bat;
     }
 
     public int getScore() {
