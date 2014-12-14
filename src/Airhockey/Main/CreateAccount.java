@@ -5,12 +5,16 @@
  */
 package Airhockey.Main;
 
+import Airhockey.Utils.Database;
 import java.io.IOException;
+import java.sql.SQLException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.control.*;
 import javafx.stage.Stage;
 
 /**
@@ -19,10 +23,11 @@ import javafx.stage.Stage;
  */
 public class CreateAccount {
 
-    CreateAccount(Stage primaryStage) {
+    public CreateAccount(Stage primaryStage) {
         createAccountSetUp(primaryStage);
     }
-        private void createAccountSetUp(Stage primaryStage) {
+
+    private void createAccountSetUp(Stage primaryStage) {
 
         Parent root = null;
 

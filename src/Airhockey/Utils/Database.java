@@ -83,6 +83,11 @@ public class Database {
             Logger.getLogger(Database.class.getName()).log(Level.SEVERE, null, ex);
         }
 
+        if(properties == null)
+        {
+            inputProperties();
+        }
+        
         String driver = this.properties.getProperty("driver");
         if (driver != null) {
             System.setProperty("jdbc.drivers", driver);
