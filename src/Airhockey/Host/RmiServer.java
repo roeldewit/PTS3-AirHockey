@@ -24,14 +24,11 @@ public class RmiServer {
     // Set binding name for HostPublisher
     private static final String bindingNamePublisher = "Publisher";
 
-    private static final String bindingNameMainLobby = "MainLobby";
-
     // References to registry, game controller and HostPublisher
     private Registry registry = null;
     private GameController gameController = null;
     private HostPublisher hostPublisher = null;
     private BasicPublisher publisher = null;
-    private MainLobby mainLobby = null;
 
     public RmiServer(Renderer hostsRenederer, Chatbox chatbox, ArrayList<User> users) {
         // Print port number for registry
@@ -80,13 +77,6 @@ public class RmiServer {
             registry.rebind(bindingNamePublisher, publisher);
         } catch (Exception ex) {
             System.out.println("Server: Cannot bind game controller");
-            System.out.println("Server: RemoteException: " + ex.getMessage());
-        }
-
-        try {
-            registry.rebind(bindingNameMainLobby, mainLobby);
-        } catch (Exception ex) {
-            System.out.println("Server: Cannot bind main lobby");
             System.out.println("Server: RemoteException: " + ex.getMessage());
         }
     }
