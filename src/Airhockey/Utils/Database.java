@@ -3,6 +3,7 @@ package Airhockey.Utils;
 import Airhockey.User.User;
 import java.io.*;
 import java.sql.*;
+import java.util.ArrayList;
 import java.util.Properties;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -83,11 +84,10 @@ public class Database {
             Logger.getLogger(Database.class.getName()).log(Level.SEVERE, null, ex);
         }
 
-        if(properties == null)
-        {
+        if (properties == null) {
             inputProperties();
         }
-        
+
         String driver = this.properties.getProperty("driver");
         if (driver != null) {
             System.setProperty("jdbc.drivers", driver);
@@ -397,5 +397,50 @@ public class Database {
         }
 
         return result;
+    }
+
+    /**
+     * Get all users
+     *
+     * @return Collection of users
+     * @throws IOException IO Exception
+     * @throws SQLException SQL Exception
+     */
+    public ArrayList<User> getUsers() throws IOException, SQLException {
+        ArrayList<User> users = new ArrayList<>();
+
+        Statement statement = null;
+        ResultSet resultSet = null;
+
+        String query = "SELECT \"username\", \"rating\" FROM \"USERS\"";
+
+        try {
+            initialiseConnection();
+
+            statement = connection.createStatement();
+            resultSet = statement.executeQuery(query);
+
+            while (resultSet.next()) {
+                String username = resultSet.getString("username");
+                double rating = resultSet.getDouble("rating");
+                User user = new User(username);
+                user.setRating(rating);
+                users.add(user);
+            }
+        } catch (SQLException exception) {
+            System.out.println("SQL Exception: " + exception.getMessage());
+        } finally {
+            if (statement != null) {
+                statement.close();
+            }
+
+            if (resultSet != null) {
+                resultSet.close();
+            }
+
+            connection.close();
+        }
+
+        return users;
     }
 }
