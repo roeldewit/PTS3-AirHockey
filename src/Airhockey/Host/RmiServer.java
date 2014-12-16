@@ -1,5 +1,6 @@
 package Airhockey.Host;
 
+import Airhockey.Rmi.BasicPublisher;
 import Airhockey.Main.Chatbox;
 import Airhockey.Renderer.Renderer;
 import Airhockey.User.User;

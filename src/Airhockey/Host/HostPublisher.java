@@ -5,6 +5,7 @@
  */
 package Airhockey.Host;
 
+import Airhockey.Rmi.BasicPublisher;
 import Airhockey.Rmi.GameData;
 import Airhockey.Rmi.Goal;
 import Airhockey.Rmi.Location;
