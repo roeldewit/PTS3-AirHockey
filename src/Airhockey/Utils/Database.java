@@ -173,9 +173,10 @@ public class Database {
         Statement statement = null;
         ResultSet resultSet = null;
 
-        String query = "SELECT username, password FROM DBI296122.USERS";
-
-        try {
+        //String query = "SELECT username, password FROM DBI296122.USERS";
+        String query = String.format("SELECT \"username\", \"password\" FROM \"USERS\" WHERE \"username\" = '%s'", username);
+        
+        try{
             statement = connection.createStatement();
             resultSet = statement.executeQuery(query);
             while (resultSet.next()) {
