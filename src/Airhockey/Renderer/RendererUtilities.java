@@ -7,7 +7,7 @@ import Airhockey.Elements.TriangleLine;
  *
  * @author Sam
  */
-public class RendererUtilities {
+class RendererUtilities {
 
     private final int bottomLeftX;
     private final int bottomRightX;

@@ -22,16 +22,16 @@ public class LeftBat extends Bat {
         String difficulty = PropertiesManager.loadProperty("LEB-Difficulty");
         switch (difficulty) {
             case "EASY":
-                speed = 5.0f;
-                break;
-            case "MEDIUM":
                 speed = 8.0f;
                 break;
-            case "HARD":
+            case "MEDIUM":
                 speed = 11.0f;
                 break;
+            case "HARD":
+                speed = 14.0f;
+                break;
             case "VERY_HARD":
-                speed = 13.0f;
+                speed = 17.0f;
                 break;
         }
         speedManipulation = speed * 0.50f;

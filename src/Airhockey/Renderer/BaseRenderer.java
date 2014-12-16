@@ -5,8 +5,12 @@
  */
 package Airhockey.Renderer;
 
+import Airhockey.Elements.*;
 import Airhockey.Main.Game;
 import Airhockey.Utils.Utils;
+import javafx.animation.FadeTransition;
+import javafx.animation.ParallelTransition;
+import javafx.animation.ScaleTransition;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.geometry.Insets;
@@ -28,12 +32,15 @@ import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
+import javafx.util.Duration;
+import org.jbox2d.common.Vec2;
+import org.jbox2d.dynamics.Body;
 
 /**
  *
  * @author Sam
  */
-public class BaseRenderer implements IRenderer {
+class BaseRenderer implements IRenderer {
 
     protected Label player1NameLabel;
     protected Label player2NameLabel;
@@ -41,12 +48,28 @@ public class BaseRenderer implements IRenderer {
     protected Label player1ScoreLabel;
     protected Label player2ScoreLabel;
     protected Label player3ScoreLabel;
+    protected Label roundTextLabel;
+    protected Label roundNumberLabel;
 
     protected final Group root = new Group();
     protected final Group mainRoot = new Group();
 
     protected final Stage primaryStage;
     protected final Game game;
+
+    protected Puck puck;
+    protected Bat bat;
+    protected LeftBat leftBat;
+    protected RightBat rightBat;
+    protected TriangleLine triangle;
+    protected TriangleLeftLine triangleLeft;
+    protected Goal redGoal;
+    protected Goal blueGoal;
+    protected Goal greenGoal;
+
+    protected Body puckBody;
+
+    protected ParallelTransition parallelTransition;
 
     public BaseRenderer(Stage primaryStage, Game game) {
         this.primaryStage = primaryStage;
@@ -72,13 +95,15 @@ public class BaseRenderer implements IRenderer {
     public void resetRound(int round) {
     }
 
-    protected void addLabels() {
+    protected void createScreenStuff() {
         player1NameLabel = new Label(game.getUsername(1) + ": ");
         player2NameLabel = new Label(game.getUsername(2) + ": ");
         player3NameLabel = new Label(game.getUsername(3) + ": ");
         player1ScoreLabel = new Label("20");
         player2ScoreLabel = new Label("20");
         player3ScoreLabel = new Label("20");
+        roundTextLabel = new Label("Round:");
+        roundNumberLabel = new Label("1");
 
         player1NameLabel.setFont(Font.font("Roboto", FontWeight.BOLD, 24.0));
         player2NameLabel.setFont(Font.font("Roboto", FontWeight.BOLD, 24.0));
@@ -86,10 +111,13 @@ public class BaseRenderer implements IRenderer {
         player1ScoreLabel.setFont(Font.font("Roboto", FontWeight.BOLD, 24.0));
         player2ScoreLabel.setFont(Font.font("Roboto", FontWeight.BOLD, 24.0));
         player3ScoreLabel.setFont(Font.font("Roboto", FontWeight.BOLD, 24.0));
+        roundTextLabel.setFont(Font.font("Roboto", FontWeight.BOLD, 24.0));
+        roundNumberLabel.setFont(Font.font("Roboto", FontWeight.BOLD, 24.0));
 
         player1NameLabel.setTextFill(Color.web("#dd4540"));
         player2NameLabel.setTextFill(Color.web("#4d7fdd"));
         player3NameLabel.setTextFill(Color.web("#009587"));
+        roundTextLabel.setTextFill(Color.web("#009587"));
 
         player1NameLabel.relocate(850, 10);
         player2NameLabel.relocate(850, 40);
@@ -97,8 +125,11 @@ public class BaseRenderer implements IRenderer {
         player1ScoreLabel.relocate(970, 10);
         player2ScoreLabel.relocate(970, 40);
         player3ScoreLabel.relocate(970, 70);
+        roundTextLabel.relocate(30, 10);
+        roundNumberLabel.relocate(120, 10);
 
         root.getChildren().addAll(player1NameLabel, player2NameLabel, player3NameLabel, player1ScoreLabel, player2ScoreLabel, player3ScoreLabel);
+        root.getChildren().addAll(roundTextLabel, roundNumberLabel);
     }
 
     protected void drawShapes() {
@@ -171,6 +202,75 @@ public class BaseRenderer implements IRenderer {
         chatBoxGroup.getChildren().add(chatBoxBorderPane);
 
         return chatBoxGroup;
+    }
+
+    protected void newRoundTransition(int round) {
+        Label roundLabel = new Label();
+        roundLabel.setText("Round " + round);
+        roundLabel.setFont(Font.font("Roboto", FontWeight.BOLD, 24.0));
+        roundLabel.setTextFill(Color.web("#009587"));
+        roundLabel.relocate(460, 340);
+
+        root.getChildren().add(roundLabel);
+
+        FadeTransition fadeTransition
+                = new FadeTransition(Duration.millis(2000), roundLabel);
+        fadeTransition.setFromValue(1.0);
+        fadeTransition.setToValue(0.0);
+
+        ScaleTransition scaleTransition
+                = new ScaleTransition(Duration.millis(2000), roundLabel);
+        scaleTransition.setFromX(2f);
+        scaleTransition.setFromY(2f);
+        scaleTransition.setToX(8f);
+        scaleTransition.setToY(8f);
+
+        parallelTransition = new ParallelTransition();
+        parallelTransition.getChildren().addAll(
+                fadeTransition,
+                scaleTransition
+        );
+
+        parallelTransition.playFromStart();
+    }
+
+    protected void createFixedItems() {
+        triangle = new TriangleLine(0, 3f, 5f, 88f, 5f, 48f, 95f);
+        triangleLeft = new TriangleLeftLine(0, 3f, 5f, 48f, 95f);
+
+        redGoal = new Goal("RED", 340, 670);
+        blueGoal = new Goal("BLUE", 124, 330);
+        greenGoal = new Goal("GREEN", 548, 330);
+
+        root.getChildren().add(triangle.node);
+        root.getChildren().add(triangleLeft.node);
+        root.getChildren().addAll(redGoal.node);
+        root.getChildren().addAll(blueGoal.node);
+        root.getChildren().addAll(greenGoal.node);
+    }
+
+    protected void correctPuckSpeed() {
+        Vec2 vec = puckBody.getLinearVelocity();
+        Vec2 puckBodyCenter = puckBody.getWorldCenter();
+
+        if (vec.x > 15) {
+            puckBody.applyLinearImpulse(new Vec2(-1.0f, 0.0f), puckBodyCenter);
+        } else if (vec.x >= 0 && vec.x < 10) {
+            puckBody.applyLinearImpulse(new Vec2(1.0f, 0.0f), puckBodyCenter);
+        } else if (vec.x > -10 && vec.x <= 0) {
+            puckBody.applyLinearImpulse(new Vec2(-1.0f, 0.0f), puckBodyCenter);
+        } else if (vec.x < -15) {
+            puckBody.applyLinearImpulse(new Vec2(1.0f, 0.0f), puckBodyCenter);
+        }
+        if (vec.y > 15) {
+            puckBody.applyLinearImpulse(new Vec2(0.0f, -1.0f), puckBodyCenter);
+        } else if (vec.y >= 0 && vec.y < 10) {
+            puckBody.applyLinearImpulse(new Vec2(0.0f, 1.0f), puckBodyCenter);
+        } else if (vec.y > -10 && vec.y <= 0) {
+            puckBody.applyLinearImpulse(new Vec2(0.0f, -1.0f), puckBodyCenter);
+        } else if (vec.y < -15) {
+            puckBody.applyLinearImpulse(new Vec2(0.0f, 1.0f), puckBodyCenter);
+        }
     }
 
 }

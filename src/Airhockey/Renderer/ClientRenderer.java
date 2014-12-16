@@ -4,21 +4,14 @@ import Airhockey.Client.ClientController;
 import Airhockey.Utils.ClientKeyListener;
 import Airhockey.Elements.*;
 import Airhockey.Main.*;
-import Airhockey.Properties.PropertiesManager;
 import Airhockey.Rmi.GameData;
 import Airhockey.Rmi.Location;
 import Airhockey.Utils.Utils;
-import java.util.Timer;
-import java.util.TimerTask;
 import javafx.animation.*;
-import javafx.application.Platform;
 import javafx.scene.Scene;
-import javafx.scene.control.*;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
-import javafx.scene.text.Font;
-import javafx.scene.text.FontWeight;
 import javafx.stage.Stage;
 import javafx.util.Duration;
 
@@ -28,25 +21,13 @@ import javafx.util.Duration;
  */
 public final class ClientRenderer extends BaseRenderer {
 
-    private Puck puck;
-    private Bat bat;
-    private Bat leftBat;
-    private Bat rightBat;
-    private TriangleLine triangle;
-    private TriangleLeftLine triangleLeft;
+    private int xPosition = 100;
+    private int yPosition = 100;
 
-    private Goal redGoal;
-    private Goal blueGoal;
-    private Goal greenGoal;
+    private final RendererUtilities rendererUtilities;
+    private final ClientController clientController;
 
-    int xPosition = 100;
-    int yPosition = 100;
-
-    RendererUtilities rendererUtilities;
-
-    private ClientController clientController;
-
-    private int playerNumber;
+    private final int playerNumber;
 
     public ClientRenderer(Stage primaryStage, Game game) {
         super(primaryStage, game);
@@ -58,16 +39,13 @@ public final class ClientRenderer extends BaseRenderer {
         rendererUtilities = new RendererUtilities(triangle);
     }
 
-    public final void start() {
+    private void start() {
         primaryStage.setTitle("AirhockeyClient");
         primaryStage.setFullScreen(false);
         primaryStage.setResizable(false);
         primaryStage.setWidth(Utils.WIDTH + 250);
         primaryStage.setHeight(Utils.HEIGHT);
         primaryStage.centerOnScreen();
-
-        PropertiesManager.saveProperty("LEB-Difficulty", "HARD");
-        PropertiesManager.saveProperty("REB-Difficulty", "VERY_HARD");
 
         final Scene scene = new Scene(mainRoot, Utils.WIDTH, Utils.HEIGHT, Color.web("#e0e0e0"));
 
@@ -83,7 +61,7 @@ public final class ClientRenderer extends BaseRenderer {
         drawShapes();
         createMovableItems();
         createFixedItems();
-        addLabels();
+        createScreenStuff();
 
         //setUpGame();
         primaryStage.setScene(scene);
@@ -119,30 +97,15 @@ public final class ClientRenderer extends BaseRenderer {
     private void createMovableItems() {
         puck = new Puck(50, 45);
 
-        bat = new Bat(1, 40, 18, Color.RED);
+        bat = new Bat(1, 50f, 15f, Color.RED);
 
-        leftBat = new Bat(2, 34, 50, Color.BLUE);
-        rightBat = new Bat(3, 65, 50, Color.GREEN);
+        leftBat = new LeftBat(2, 31f, 50f, Color.BLUE);
+        rightBat = new RightBat(3, 67.5f, 50f, Color.GREEN);
 
         root.getChildren().addAll(puck.node, puck.imageNode);
         root.getChildren().addAll(bat.node, bat.imageNode);
         root.getChildren().addAll(leftBat.node, leftBat.imageNode);
         root.getChildren().addAll(rightBat.node, rightBat.imageNode);
-    }
-
-    private void createFixedItems() {
-        triangle = new TriangleLine(0, 3f, 5f, 88f, 5f, 48f, 95f);
-        triangleLeft = new TriangleLeftLine(0, 3f, 5f, 48f, 95f);
-
-        redGoal = new Goal("RED", 340, 670);
-        blueGoal = new Goal("BLUE", 124, 330);
-        greenGoal = new Goal("GREEN", 548, 330);
-
-        root.getChildren().add(triangle.node);
-        root.getChildren().add(triangleLeft.node);
-        root.getChildren().addAll(redGoal.node, redGoal.collisionNode);
-        root.getChildren().addAll(blueGoal.node, blueGoal.collisionNode);
-        root.getChildren().addAll(greenGoal.node, greenGoal.collisionNode);
     }
 
     @Override
@@ -155,36 +118,6 @@ public final class ClientRenderer extends BaseRenderer {
         newRoundTransition(round);
 
         createMovableItems();
-    }
-
-    private void newRoundTransition(int round) {
-        Label roundLabel = new Label();
-        roundLabel.setText("Round " + round);
-        roundLabel.setFont(Font.font("Roboto", FontWeight.BOLD, 24.0));
-        roundLabel.setTextFill(Color.web("#009587"));
-        roundLabel.relocate(460, 340);
-
-        root.getChildren().add(roundLabel);
-
-        FadeTransition fadeTransition
-                = new FadeTransition(Duration.millis(2000), roundLabel);
-        fadeTransition.setFromValue(1.0);
-        fadeTransition.setToValue(0.0);
-
-        ScaleTransition scaleTransition
-                = new ScaleTransition(Duration.millis(2000), roundLabel);
-        scaleTransition.setFromX(2f);
-        scaleTransition.setFromY(2f);
-        scaleTransition.setToX(8f);
-        scaleTransition.setToY(8f);
-
-        ParallelTransition parallelTransition = new ParallelTransition();
-        parallelTransition.getChildren().addAll(
-                fadeTransition,
-                scaleTransition
-        );
-
-        parallelTransition.playFromStart();
     }
 
     protected void stop() {

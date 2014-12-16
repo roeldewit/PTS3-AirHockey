@@ -25,7 +25,7 @@ public class Puck {
     private final float positionX;
     private final float positionY;
 
-    private float radius = 20f;
+    private float radius = 25f;
 
     private final BodyType bodyType;
     public Body body;

@@ -102,7 +102,7 @@ public class BatController {
      * @param leftBatPositionY
      */
     protected void controlLeftBat(float leftBatPositionY) {
-        if (leftBatPositionY > 270) {
+        if (leftBatPositionY > Constants.BAT_MAX_Y) {
             canStopLeftBatTop = true;
             if (leftBatMovementUp) {
                 renderer.leftBatBody.setLinearVelocity(new Vec2(speed - leftSpeedManipulation, speed));
@@ -115,7 +115,7 @@ public class BatController {
                 canStopLeftBatTop = false;
             }
         }
-        if (leftBatPositionY < 490) {
+        if (leftBatPositionY < Constants.BAT_MIN_Y) {
             canStopLeftBatBottom = true;
             if (leftBatMovementDown) {
                 renderer.leftBatBody.setLinearVelocity(new Vec2(-speed + leftSpeedManipulation, -speed));
@@ -151,7 +151,7 @@ public class BatController {
      * @param rightBatPositionY
      */
     protected void controlRightBat(float rightBatPositionY) {
-        if (rightBatPositionY > 270) {
+        if (rightBatPositionY > Constants.BAT_MAX_Y) {
             canStopRightBatTop = true;
             if (rightBatMovementUp) {
                 renderer.rightBatBody.setLinearVelocity(new Vec2(-speed + rightSpeedManipulation, speed));
@@ -164,7 +164,7 @@ public class BatController {
                 canStopRightBatTop = false;
             }
         }
-        if (rightBatPositionY < 490) {
+        if (rightBatPositionY < Constants.BAT_MIN_Y) {
             canStopRightBatBottom = true;
             if (rightBatMovementDown) {
                 renderer.rightBatBody.setLinearVelocity(new Vec2(speed - rightSpeedManipulation, -speed));

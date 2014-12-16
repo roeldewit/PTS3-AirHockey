@@ -21,16 +21,16 @@ public class RightBat extends Bat {
         String difficulty = PropertiesManager.loadProperty("REB-Difficulty");
         switch (difficulty) {
             case "EASY":
-                speed = 5.0f;
-                break;
-            case "MEDIUM":
                 speed = 8.0f;
                 break;
-            case "HARD":
+            case "MEDIUM":
                 speed = 11.0f;
                 break;
-            case "VERY_HARD":
+            case "HARD":
                 speed = 14.0f;
+                break;
+            case "VERY_HARD":
+                speed = 17.0f;
                 break;
         }
         speedManipulation = speed * 0.55f;
