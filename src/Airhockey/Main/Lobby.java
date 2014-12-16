@@ -19,11 +19,6 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
 
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 /**
  *
  * @author Roel
@@ -49,7 +44,7 @@ public class Lobby {
         this.primaryStage = primaryStage;
         database = new Database();
         hashMapUsernameToUser = new HashMap();
-        
+
         try {
             users = database.getUsers();
 
@@ -120,7 +115,7 @@ public class Lobby {
         }
     }
 
-    private Game joinGame(int id , String usern) throws RemoteException {
+    private Game joinGame(int id, String usern) throws RemoteException {
         SerializableGame serializableGame = mainLobby.getWaitingGames().get(id);
         mainLobby.joinGame(id, usern);
         ArrayList<Player> players = new ArrayList<>();
@@ -146,10 +141,10 @@ public class Lobby {
         return mainLobby.getWaitingGames();
     }
 
-    private void startGame(SerializableGame serializableGame){
+    private void startGame(SerializableGame serializableGame) {
         mainLobby.startGame(serializableGame);
     }
-    
+
     /*
      public LobbyController(String ipMainServer, int portMainServer) {
      db = new Database();

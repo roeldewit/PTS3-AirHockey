@@ -22,6 +22,7 @@ import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.shape.Shape;
 import javafx.stage.Stage;
+import javafx.stage.WindowEvent;
 import javafx.util.Duration;
 import org.jbox2d.callbacks.ContactImpulse;
 import org.jbox2d.callbacks.ContactListener;
@@ -36,8 +37,6 @@ import org.jbox2d.dynamics.contacts.Contact;
  * @author Sam
  */
 public class Renderer extends BaseRenderer {
-
-    private Timeline timeline;
 
     private Bat lastHittedBat;
 
@@ -58,15 +57,14 @@ public class Renderer extends BaseRenderer {
     private boolean canUpdate;
 
     private final BatController batController;
-
+    private Timeline timeline;
+    private final ExecutorService threadPool;
     private RmiServer rmiServer;
 
     private float puckBodyPosX;
     private float puckBodyPosY;
     private float batBodyPosX;
     private float batBodyPosY;
-
-    private final ExecutorService threadPool;
 
     public Renderer(Stage primaryStage, Game game, boolean isMultiplayer) {
         super(primaryStage, game);
@@ -88,11 +86,15 @@ public class Renderer extends BaseRenderer {
         primaryStage.setWidth(Utils.WIDTH + 250);
         primaryStage.setHeight(Utils.HEIGHT);
         primaryStage.centerOnScreen();
+        primaryStage.setOnCloseRequest((WindowEvent windowEvent) -> {
+            shutDown();
+            primaryStage.close();
+        });
 
         PropertiesManager.saveProperty("LEB-Difficulty", "MEDIUM");
         PropertiesManager.saveProperty("REB-Difficulty", "VERY_HARD");
 
-        final Scene scene = new Scene(mainRoot, Utils.WIDTH, Utils.HEIGHT, Color.web("#e0e0e0"));
+        final Scene scene = new Scene(mainRoot, Utils.WIDTH, Utils.HEIGHT, Color.web(Constants.COLOR_GRAY));
 
         KeyListener keyListener = new KeyListener(batController);
         scene.setOnKeyPressed(keyListener);
@@ -139,6 +141,7 @@ public class Renderer extends BaseRenderer {
             canUpdate = true;
             timeline.playFromStart();
             startButton.setDisable(true);
+            startButton.setVisible(false);
         });
 
         root.getChildren().add(startButton);
@@ -148,12 +151,12 @@ public class Renderer extends BaseRenderer {
         puck = new Puck(50, 45);
 
         if (batBody != null) {
-            bat = new Bat(1, batBody.getPosition().x, batBody.getPosition().y, Color.RED);
+            bat = new Bat(batBody.getPosition().x, batBody.getPosition().y, Constants.COLOR_RED);
         } else {
-            bat = new Bat(1, 50f, 15f, Color.RED);
+            bat = new Bat(50f, 15f, Constants.COLOR_RED);
         }
-        leftBat = new LeftBat(2, 31f, 50f, Color.BLUE);
-        rightBat = new RightBat(3, 67.5f, 50f, Color.GREEN);
+        leftBat = new LeftBat(31f, 50f, Constants.COLOR_BLUE);
+        rightBat = new RightBat(67.5f, 50f, Constants.COLOR_GREEN);
 
         root.getChildren().addAll(puck.node);
         root.getChildren().addAll(bat.node, bat.imageNode);
@@ -349,8 +352,13 @@ public class Renderer extends BaseRenderer {
         FillTransition ft = new FillTransition(Duration.millis(2000), rect, Color.TRANSPARENT, Color.GRAY);
         ft.playFromStart();
 
+        shutDown();
+    }
+
+    private void shutDown() {
         canUpdate = false;
         timeline.stop();
+        threadPool.shutdownNow();
     }
 
     private class BatPuckContactListener implements ContactListener {

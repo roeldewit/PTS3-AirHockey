@@ -2,7 +2,6 @@ package Airhockey.Elements;
 
 import Airhockey.Utils.Utils;
 import Airhockey.Properties.PropertiesManager;
-import javafx.scene.paint.Color;
 import org.jbox2d.common.Vec2;
 import org.jbox2d.dynamics.Body;
 
@@ -15,8 +14,8 @@ public class RightBat extends Bat {
     private float speed;
     private final float speedManipulation;
 
-    public RightBat(int id, float postionX, float postionY, Color color) {
-        super(id, postionX, postionY, color);
+    public RightBat(float postionX, float postionY, String type) {
+        super(postionX, postionY, type);
 
         String difficulty = PropertiesManager.loadProperty("REB-Difficulty");
         switch (difficulty) {

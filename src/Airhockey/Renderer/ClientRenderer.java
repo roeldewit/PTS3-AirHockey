@@ -24,7 +24,7 @@ public final class ClientRenderer extends BaseRenderer {
     private int xPosition = 100;
     private int yPosition = 100;
 
-    private final RendererUtilities rendererUtilities;
+    private final RenderUtilities rendererUtilities;
     private final ClientController clientController;
 
     private final int playerNumber;
@@ -36,7 +36,7 @@ public final class ClientRenderer extends BaseRenderer {
         playerNumber = clientController.getPlayerNumber();
 
         start();
-        rendererUtilities = new RendererUtilities(triangle);
+        rendererUtilities = new RenderUtilities(triangle);
     }
 
     private void start() {
@@ -47,7 +47,7 @@ public final class ClientRenderer extends BaseRenderer {
         primaryStage.setHeight(Utils.HEIGHT);
         primaryStage.centerOnScreen();
 
-        final Scene scene = new Scene(mainRoot, Utils.WIDTH, Utils.HEIGHT, Color.web("#e0e0e0"));
+        final Scene scene = new Scene(mainRoot, Utils.WIDTH, Utils.HEIGHT, Color.web(Constants.COLOR_GRAY));
 
         ClientKeyListener keyListener = new ClientKeyListener(this, clientController);
         scene.setOnKeyPressed(keyListener);
@@ -97,10 +97,10 @@ public final class ClientRenderer extends BaseRenderer {
     private void createMovableItems() {
         puck = new Puck(50, 45);
 
-        bat = new Bat(1, 50f, 15f, Color.RED);
+        bat = new Bat(50f, 15f, Constants.COLOR_RED);
 
-        leftBat = new LeftBat(2, 31f, 50f, Color.BLUE);
-        rightBat = new RightBat(3, 67.5f, 50f, Color.GREEN);
+        leftBat = new LeftBat(31f, 50f, Constants.COLOR_BLUE);
+        rightBat = new RightBat(67.5f, 50f, Constants.COLOR_GREEN);
 
         root.getChildren().addAll(puck.node, puck.imageNode);
         root.getChildren().addAll(bat.node, bat.imageNode);

@@ -9,22 +9,11 @@ import java.util.logging.Logger;
 import javafx.application.Application;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
-import javafx.geometry.Insets;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
-import javafx.scene.effect.DropShadow;
-import javafx.scene.effect.Reflection;
-import javafx.scene.layout.*;
-import javafx.scene.paint.Color;
-import javafx.scene.text.*;
 import javafx.stage.Stage;
 
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 /**
  *
  * @author martijn
@@ -57,8 +46,7 @@ public class Login extends Application {
     final ToggleGroup group = new ToggleGroup();
 
     @Override
-    public void start(Stage primaryStage
-    ) {
+    public void start(Stage primaryStage) {
 
         Login(primaryStage);
         this.primaryStage = primaryStage;
@@ -125,12 +113,10 @@ public class Login extends Application {
         if (rbEasy.isSelected()) {
             PropertiesManager.saveProperty("LEB-Difficulty", "EASY");
             PropertiesManager.saveProperty("REB-Difficulty", "MEDIUM");
-        }
-        else if (rbNormal.isSelected()) {
+        } else if (rbNormal.isSelected()) {
             PropertiesManager.saveProperty("LEB-Difficulty", "MEDIUM");
             PropertiesManager.saveProperty("REB-Difficulty", "HARD");
-        }
-        else if (rbHard.isSelected()) {
+        } else if (rbHard.isSelected()) {
             PropertiesManager.saveProperty("LEB-Difficulty", "HARD");
             PropertiesManager.saveProperty("REB-Difficulty", "VERY_HARD");
         }

@@ -1,5 +1,6 @@
 package Airhockey.Elements;
 
+import Airhockey.Renderer.Constants;
 import Airhockey.User.Player;
 import Airhockey.Utils.Utils;
 import javafx.scene.Node;
@@ -20,9 +21,8 @@ import org.jbox2d.dynamics.FixtureDef;
  */
 public class Bat {
 
-    private final int id;
     private Player player;
-    private final Color color;
+    private final String type;
 
     protected final float positionX;
     protected final float positionY;
@@ -36,9 +36,8 @@ public class Bat {
     private final BodyType bodyType;
     private Body body;
 
-    public Bat(int id, float positionX, float positionY, Color color) {
-        this.id = id;
-        this.color = color;
+    public Bat(float positionX, float positionY, String type) {
+        this.type = type;
         this.positionX = positionX;
         this.positionY = positionY;
         this.bodyType = BodyType.KINEMATIC;
@@ -66,9 +65,9 @@ public class Bat {
 
         FixtureDef fd = new FixtureDef();
         fd.shape = cs;
-        fd.density = 0.0f;
+        fd.density = 0.1f;
         fd.friction = 0.0f;
-        fd.restitution = 0.0f;
+        fd.restitution = 0.1f;
 
         body = Utils.world.createBody(bd);
         body.createFixture(fd);
@@ -78,12 +77,16 @@ public class Bat {
 
     private Node createImageNode() {
         Image image;
-        if (color.equals(Color.RED)) {
-            image = new Image(getClass().getResourceAsStream("Images/RedBatSmaller.png"), diameter, diameter, false, false);
-        } else if (color.equals(Color.BLUE)) {
-            image = new Image(getClass().getResourceAsStream("Images/BlueBatSmaller.png"), diameter, diameter, false, false);
-        } else {
-            image = new Image(getClass().getResourceAsStream("Images/GreenBatSmaller.png"), diameter, diameter, false, false);
+        switch (type) {
+            case Constants.COLOR_RED:
+                image = new Image(getClass().getResourceAsStream("Images/RedBatSmaller.png"), diameter, diameter, false, false);
+                break;
+            case Constants.COLOR_BLUE:
+                image = new Image(getClass().getResourceAsStream("Images/BlueBatSmaller.png"), diameter, diameter, false, false);
+                break;
+            default:
+                image = new Image(getClass().getResourceAsStream("Images/GreenBatSmaller.png"), diameter, diameter, false, false);
+                break;
         }
         ImageView imageView = new ImageView(image);
         imageView.relocate(Utils.toPixelPosX(positionX) - radius, Utils.toPixelPosY(positionY) - radius);
@@ -112,12 +115,12 @@ public class Bat {
     public Body getBody() {
         return body;
     }
-    
-    public Player getPlayer(){
+
+    public Player getPlayer() {
         return player;
     }
-    
-    public void setPlayer(Player player){
+
+    public void setPlayer(Player player) {
         this.player = player;
     }
 }

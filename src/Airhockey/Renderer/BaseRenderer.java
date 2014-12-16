@@ -119,10 +119,10 @@ class BaseRenderer implements IRenderer {
         roundTextLabel.setFont(Font.font("Roboto", FontWeight.BOLD, 24.0));
         roundNumberLabel.setFont(Font.font("Roboto", FontWeight.BOLD, 24.0));
 
-        player1NameLabel.setTextFill(Color.web("#dd4540"));
-        player2NameLabel.setTextFill(Color.web("#4d7fdd"));
-        player3NameLabel.setTextFill(Color.web("#009587"));
-        roundTextLabel.setTextFill(Color.web("#009587"));
+        player1NameLabel.setTextFill(Color.web(Constants.COLOR_RED));
+        player2NameLabel.setTextFill(Color.web(Constants.COLOR_BLUE));
+        player3NameLabel.setTextFill(Color.web(Constants.COLOR_GREEN));
+        roundTextLabel.setTextFill(Color.web(Constants.COLOR_ORANGE));
 
         player1NameLabel.relocate(850, 10);
         player2NameLabel.relocate(850, 40);
@@ -145,7 +145,7 @@ class BaseRenderer implements IRenderer {
         double centerPointX = Utils.WIDTH / 2;
         double centerPointY = Utils.HEIGHT / 2;
 
-        gc.setStroke(Color.web("#dd4540"));
+        gc.setStroke(Color.BLACK);
         gc.setLineWidth(3);
         gc.strokeOval(centerPointX - 100, centerPointY - 60, 200, 200);
 
@@ -169,7 +169,7 @@ class BaseRenderer implements IRenderer {
 
         Label label = new Label("GAME OVER");
         label.setFont(Font.font("Roboto", 24.0));
-        label.setTextFill(Color.web("#009587"));
+        label.setTextFill(Color.web(Constants.COLOR_GREEN));
         label.setPadding(new Insets(0, 0, 20, 0));
         label.relocate(100, 10);
 
@@ -198,11 +198,8 @@ class BaseRenderer implements IRenderer {
         chatBoxBorderPane.setMinHeight(Utils.HEIGHT - 40);
         chatBoxBorderPane.setMaxWidth(244);
 
-        btn.setOnAction(new EventHandler<ActionEvent>() {
-            @Override
-            public void handle(ActionEvent e) {
-                textField.clear();
-            }
+        btn.setOnAction((ActionEvent e) -> {
+            textField.clear();
         });
 
         Group chatBoxGroup = new Group();
@@ -215,7 +212,7 @@ class BaseRenderer implements IRenderer {
         Label roundLabel = new Label();
         roundLabel.setText("Round " + round);
         roundLabel.setFont(Font.font("Roboto", FontWeight.BOLD, 24.0));
-        roundLabel.setTextFill(Color.web("#009587"));
+        roundLabel.setTextFill(Color.web(Constants.COLOR_ORANGE));
         roundLabel.relocate(460, 340);
 
         root.getChildren().add(roundLabel);
@@ -245,9 +242,9 @@ class BaseRenderer implements IRenderer {
         triangle = new TriangleLine(0, 3f, 5f, 88f, 5f, 48f, 95f);
         triangleLeft = new TriangleLeftLine(0, 3f, 5f, 48f, 95f);
 
-        redGoal = new Goal("RED", 340, 670);
-        blueGoal = new Goal("BLUE", 124, 330);
-        greenGoal = new Goal("GREEN", 548, 330);
+        redGoal = new Goal(Constants.GOAL_RED, 340, 670);
+        blueGoal = new Goal(Constants.GOAL_BLUE, 124, 330);
+        greenGoal = new Goal(Constants.GOAL_GREEN, 548, 330);
 
         root.getChildren().add(triangle.node);
         root.getChildren().add(triangleLeft.node);
@@ -260,24 +257,26 @@ class BaseRenderer implements IRenderer {
         Vec2 vec = puckBody.getLinearVelocity();
         Vec2 puckBodyCenter = puckBody.getWorldCenter();
 
-        if (vec.x > 15) {
-            puckBody.applyLinearImpulse(new Vec2(-1.0f, 0.0f), puckBodyCenter);
-        } else if (vec.x >= 0 && vec.x < 10) {
-            puckBody.applyLinearImpulse(new Vec2(1.0f, 0.0f), puckBodyCenter);
-        } else if (vec.x > -10 && vec.x <= 0) {
-            puckBody.applyLinearImpulse(new Vec2(-1.0f, 0.0f), puckBodyCenter);
-        } else if (vec.x < -15) {
-            puckBody.applyLinearImpulse(new Vec2(1.0f, 0.0f), puckBodyCenter);
-        }
-        if (vec.y > 15) {
-            puckBody.applyLinearImpulse(new Vec2(0.0f, -1.0f), puckBodyCenter);
-        } else if (vec.y >= 0 && vec.y < 10) {
-            puckBody.applyLinearImpulse(new Vec2(0.0f, 1.0f), puckBodyCenter);
-        } else if (vec.y > -10 && vec.y <= 0) {
-            puckBody.applyLinearImpulse(new Vec2(0.0f, -1.0f), puckBodyCenter);
-        } else if (vec.y < -15) {
-            puckBody.applyLinearImpulse(new Vec2(0.0f, 1.0f), puckBodyCenter);
+        if (Math.abs(vec.x) > Math.abs(vec.y)) {
+            if (vec.x > 20) {
+                puckBody.applyLinearImpulse(new Vec2(-1.0f, 0.0f), puckBodyCenter);
+            } else if (vec.x >= 0 && vec.x < 12) {
+                puckBody.applyLinearImpulse(new Vec2(1.0f, 1.0f), puckBodyCenter);
+            } else if (vec.x > -12 && vec.x <= 0) {
+                puckBody.applyLinearImpulse(new Vec2(-1.0f, -1.0f), puckBodyCenter);
+            } else if (vec.x < -20) {
+                puckBody.applyLinearImpulse(new Vec2(1.0f, 0.0f), puckBodyCenter);
+            }
+        } else {
+            if (vec.y > 20) {
+                puckBody.applyLinearImpulse(new Vec2(0.0f, -1.0f), puckBodyCenter);
+            } else if (vec.y >= 0 && vec.y < 12) {
+                puckBody.applyLinearImpulse(new Vec2(1.0f, 1.0f), puckBodyCenter);
+            } else if (vec.y > -12 && vec.y <= 0) {
+                puckBody.applyLinearImpulse(new Vec2(-1.0f, -1.0f), puckBodyCenter);
+            } else if (vec.y < -20) {
+                puckBody.applyLinearImpulse(new Vec2(0.0f, 1.0f), puckBodyCenter);
+            }
         }
     }
-
 }

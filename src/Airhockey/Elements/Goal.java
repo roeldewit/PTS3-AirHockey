@@ -1,6 +1,6 @@
 package Airhockey.Elements;
 
-import Airhockey.Utils.Utils;
+import Airhockey.Renderer.Constants;
 import javafx.animation.RotateTransition;
 import javafx.scene.Node;
 import javafx.scene.paint.Color;
@@ -26,22 +26,22 @@ public class Goal {
     public Node node;
     public Node collisionNode;
 
-    public Goal(String color, int topLeftX, int topLeftY) {
+    public Goal(int color, int topLeftX, int topLeftY) {
         this.topLeftX = topLeftX;
         this.topLeftY = topLeftY;
 
         switch (color) {
-            case "RED":
+            case Constants.GOAL_RED:
                 rotation = 0;
-                this.color = Color.web("#dd4540");
+                this.color = Color.web(Constants.COLOR_RED);
                 break;
-            case "BLUE":
+            case Constants.GOAL_BLUE:
                 rotation = -57;
-                this.color = Color.web("#4d7fdd");
+                this.color = Color.web(Constants.COLOR_BLUE);
                 break;
             default:
                 rotation = 60;
-                this.color = Color.web("#009587");
+                this.color = Color.web(Constants.COLOR_GREEN);
                 break;
         }
 

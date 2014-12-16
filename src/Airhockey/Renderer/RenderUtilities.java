@@ -7,7 +7,7 @@ import Airhockey.Elements.TriangleLine;
  *
  * @author Sam
  */
-class RendererUtilities {
+class RenderUtilities {
 
     private final int bottomLeftX;
     private final int bottomRightX;
@@ -24,7 +24,7 @@ class RendererUtilities {
     private final int[] movingLineXLeft;
     private final int[] movingLineXRight;
 
-    public RendererUtilities(TriangleLine triangleLine) {
+    public RenderUtilities(TriangleLine triangleLine) {
         centerTopY = triangleLine.getCenterTopY();
         bottomY = triangleLine.getBottomLeftY();
 

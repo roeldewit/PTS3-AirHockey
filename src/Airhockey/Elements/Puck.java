@@ -1,5 +1,6 @@
 package Airhockey.Elements;
 
+import Airhockey.Renderer.Constants;
 import Airhockey.Utils.Utils;
 import javafx.scene.Node;
 import javafx.scene.image.Image;
@@ -44,7 +45,7 @@ public class Puck {
     private Node create() {
         Circle puck = new Circle();
         puck.setRadius(radius);
-        puck.setFill(Color.BLACK);
+        puck.setFill(Color.web(Constants.COLOR_ORANGE));
 
         puck.setLayoutX(Utils.toPixelPosX(positionX));
         puck.setLayoutY(Utils.toPixelPosY(positionY));
