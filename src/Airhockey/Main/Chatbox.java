@@ -1,5 +1,6 @@
 package Airhockey.Main;
 
+import Airhockey.Rmi.SerializableChatBox;
 import java.util.ArrayList;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
@@ -30,7 +31,7 @@ public class Chatbox {
     BorderPane borderPane;
 
     public Chatbox() {
-
+        lines = new ArrayList<>();
     }
 
     public ArrayList<ChatboxLine> getLines() {
