@@ -2,6 +2,7 @@ package Airhockey.Main;
 
 import Airhockey.Utils.Database;
 import java.io.IOException;
+import java.sql.SQLException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javafx.application.Application;
@@ -42,6 +43,12 @@ public class Login extends Application {
     RadioButton rbHard;
 
     @FXML
+    TextField tfUsername;
+
+    @FXML
+    TextField tfPassword;
+
+    @FXML
     Button btStartSingleGame;
 
     Database db;
@@ -51,6 +58,7 @@ public class Login extends Application {
     @Override
     public void start(Stage primaryStage
     ) {
+
         Login(primaryStage);
         this.primaryStage = primaryStage;
 
@@ -80,11 +88,29 @@ public class Login extends Application {
 
     }
 
-    public void actionlogin() {
-
+    public void startSingleGame() {
         primaryStage = (Stage) btLogin.getScene().getWindow();
         primaryStage.close();
-        Lobby lobby = new Lobby(primaryStage);
+        Game g = new Game(primaryStage, false, false);
+    }
+
+    public void actionlogin() {
+        try {
+            db = new Database();
+            if (db.loginCheck(tfUsername.getText(), tfPassword.getText())) {
+                primaryStage = (Stage) btLogin.getScene().getWindow();
+                primaryStage.close();
+                Lobby lobby = new Lobby(primaryStage);
+                System.out.println("User: " + tfUsername.getText() + " logged in!");
+            } else {
+                primaryStage = (Stage) btLogin.getScene().getWindow();
+                primaryStage.close();
+                Lobby lobby = new Lobby(primaryStage);
+                System.out.println("Logged in (no user)!");
+            }
+        } catch (SQLException | IOException ex) {
+            Logger.getLogger(Login.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }
 
     public void actionCreateAccount() {

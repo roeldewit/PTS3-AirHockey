@@ -16,6 +16,7 @@ import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Button;
 import javafx.scene.control.TextField;
+import javafx.stage.Stage;
 
 /**
  *
@@ -27,15 +28,14 @@ public class CreateAccountController implements Initializable {
     Button btCreate;
 
     @FXML
-    TextField tbUsername;
+    TextField tfUsername;
 
     @FXML
-    TextField tbPassword;
+    TextField tfPassword;
 
     Database database;
-    
-    public CreateAccountController()
-    {
+
+    public CreateAccountController() {
         database = new Database();
     }
 
@@ -47,7 +47,16 @@ public class CreateAccountController implements Initializable {
 
     public void actionCreateNewAccount() {
         try {
-            database.insertUser(tbUsername.getText(), tbPassword.getText());
+            if (database.insertUser(tfUsername.getText(), tfPassword.getText())) {
+                Stage primaryStage = (Stage) tfPassword.getScene().getWindow();
+                primaryStage.close();
+                Login login = new Login();
+                login.Login(primaryStage);
+            }
+            else
+            {
+                System.out.println("User not created!");
+            }
         } catch (SQLException | IOException ex) {
             Logger.getLogger(CreateAccount.class.getName()).log(Level.SEVERE, null, ex);
         }

@@ -23,7 +23,7 @@
             <RadioButton fx:id="rbEasy" layoutX="90.0" layoutY="199.0" mnemonicParsing="false" text="Easy" />
             <RadioButton fx:id="rbNormal" layoutX="90.0" layoutY="240.0" mnemonicParsing="false" text="Normal" />
             <RadioButton fx:id="rbHard" layoutX="90.0" layoutY="282.0" mnemonicParsing="false" text="Hard" />
-            <Button fx:id="btStartSingleGame" layoutX="101.0" layoutY="332.0" mnemonicParsing="false" prefHeight="31.0" prefWidth="94.0" text="Start Game" />
+            <Button fx:id="btStartSingleGame" layoutX="101.0" layoutY="332.0" mnemonicParsing="false" onAction="#startSingleGame" prefHeight="31.0" prefWidth="94.0" text="Start Game" />
          </children></AnchorPane>
     <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="160.0" prefWidth="100.0">
          <children>
@@ -37,8 +37,8 @@
                   <Font size="20.0" />
                </font>
             </Label>
-            <TextField layoutX="73.0" layoutY="207.0" promptText="Username" />
-            <TextField layoutX="73.0" layoutY="270.0" promptText="Password" />
+            <TextField fx:id="tfUsername" layoutX="73.0" layoutY="207.0" promptText="Username" />
+            <TextField fx:id="tfPassword" layoutX="73.0" layoutY="270.0" promptText="Password" />
             <Button fx:id="btLogin" layoutX="26.0" layoutY="331.0" mnemonicParsing="false" onAction="#actionlogin" prefHeight="31.0" prefWidth="94.0" text="Login" />
             <Button fx:id="btCreateAccount" layoutX="166.0" layoutY="331.0" mnemonicParsing="false" onAction="#actionCreateAccount" prefHeight="31.0" prefWidth="112.0" text="Create Account" />
          </children></AnchorPane>
