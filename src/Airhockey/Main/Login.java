@@ -3,6 +3,8 @@ package Airhockey.Main;
 import Airhockey.Properties.PropertiesManager;
 import Airhockey.Utils.Database;
 import java.io.IOException;
+import java.rmi.NotBoundException;
+import java.rmi.RemoteException;
 import java.sql.SQLException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -100,6 +102,8 @@ public class Login extends Application {
             }
         } catch (SQLException | IOException ex) {
             Logger.getLogger(Login.class.getName()).log(Level.SEVERE, null, ex);
+        } catch(NotBoundException ex){
+            // to do add a proper notification
         }
     }
 

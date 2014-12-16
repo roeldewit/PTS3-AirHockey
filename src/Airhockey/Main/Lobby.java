@@ -10,6 +10,7 @@ import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.logging.Level;
@@ -39,24 +40,19 @@ public class Lobby {
 
     Stage primaryStage;
 
-    public Lobby(Stage primaryStage) {
+    public Lobby(Stage primaryStage) throws RemoteException, NotBoundException, IOException, SQLException {
         LobbySetUp(primaryStage);
         this.primaryStage = primaryStage;
         database = new Database();
         hashMapUsernameToUser = new HashMap();
 
-        try {
-            users = database.getUsers();
+        users = database.getUsers();
 
-            for (User dbuser : users) {
-                hashMapUsernameToUser.put(dbuser.getUsername(), dbuser);
-            }
-
-            connectToMainServer();
-
-        } catch (Exception e) {
-            throw new RuntimeException(e.getMessage());
+        for (User dbuser : users) {
+            hashMapUsernameToUser.put(dbuser.getUsername(), dbuser);
         }
+
+        connectToMainServer();
 
         getInitialChatbox();
     }
@@ -87,23 +83,12 @@ public class Lobby {
         }
     }
 
-    private void connectToMainServer() {
-
+    private void connectToMainServer() throws RemoteException, NotBoundException {
         this.mainLobby = null;
 
-        try {
-            register = LocateRegistry.getRegistry(ipMainServer, portMainServer);
-        } catch (RemoteException ex) {
-            System.err.println("Unable to find registry");
-            System.exit(-1);
-        }
+        register = LocateRegistry.getRegistry(ipMainServer, portMainServer);
 
-        try {
-            this.mainLobby = ((IMainLobby) register.lookup("GameController"));
-        } catch (RemoteException | NotBoundException exc) {
-            System.err.println("Unable to find gamecontroller");
-            System.exit(-1);
-        }
+        this.mainLobby = ((IMainLobby) register.lookup("MainLobby"));
     }
 
     private void getInitialChatbox() {
