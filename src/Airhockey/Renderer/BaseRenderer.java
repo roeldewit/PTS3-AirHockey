@@ -28,6 +28,11 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.HBoxBuilder;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
+import javafx.scene.shape.Arc;
+import javafx.scene.shape.ArcTo;
+import javafx.scene.shape.ArcType;
+import javafx.scene.shape.FillRule;
+import javafx.scene.shape.Path;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
 import javafx.stage.Modality;
@@ -143,6 +148,8 @@ class BaseRenderer implements IRenderer {
         gc.setStroke(Color.web("#dd4540"));
         gc.setLineWidth(3);
         gc.strokeOval(centerPointX - 100, centerPointY - 60, 200, 200);
+
+        //gc.strokeArc(600, 200, 100, 300, 140, 180, ArcType.ROUND);
     }
 
     protected void showPopupWindow() {
