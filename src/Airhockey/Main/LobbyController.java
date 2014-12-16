@@ -5,13 +5,20 @@
  */
 package Airhockey.Main;
 
+import Airhockey.Rmi.*;
+import Airhockey.Rmi.SerializableChatBox;
 import Airhockey.User.Player;
 import Airhockey.User.User;
 import Airhockey.Utils.Database;
 import java.io.IOException;
 import java.net.URL;
+import java.rmi.NotBoundException;
+import java.rmi.RemoteException;
+import java.rmi.registry.LocateRegistry;
+import java.rmi.registry.Registry;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.ResourceBundle;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -36,13 +43,13 @@ public class LobbyController implements Initializable {
 
     @FXML
     ListView lvChatbox;
-    
+
     @FXML
     ListView lvRatingTable;
-    
+
     @FXML
     TextField tfDescription;
-    
+
     @FXML
     ListView lvOpenGames;
 
@@ -60,7 +67,7 @@ public class LobbyController implements Initializable {
 
     public LobbyController() {
         db = new Database();
-        
+
         chatItems = FXCollections.observableArrayList();
         ratingItems = FXCollections.observableArrayList("TestUser1 : 21", "TestUser2 : 19");
         gameItems = FXCollections.observableArrayList();
@@ -71,16 +78,15 @@ public class LobbyController implements Initializable {
     public void startGame() {
         gameItems.add(tfDescription.getText());
         lvOpenGames.setItems(gameItems);
-        
+
         primaryStage = (Stage) btStartGame.getScene().getWindow();
         primaryStage.close();
         try {
-            User user = db.getUser("TestUser5");
             ArrayList<Player> playerList = new ArrayList();
-            Player player = new Player(0,user);
+            Player player = new Player(0, db.getUser("TestUser5"));
             playerList.add(player);
             //Game g = new Game(primaryStage, false, false);
-            Game multiGame = new Game(primaryStage,playerList,db.getUsers());
+            Game multiGame = new Game(primaryStage, playerList, db.getUsers());
         } catch (IOException | SQLException ex) {
             Logger.getLogger(LobbyController.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -92,5 +98,4 @@ public class LobbyController implements Initializable {
             lvChatbox.setItems(chatItems);
         }
     }
-
 }
