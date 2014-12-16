@@ -51,7 +51,7 @@ public class Login extends Application {
     @FXML
     Button btStartSingleGame;
 
-    Database db;
+    Database database;
     Stage primaryStage;
     final ToggleGroup group = new ToggleGroup();
 
@@ -96,8 +96,8 @@ public class Login extends Application {
 
     public void actionlogin() {
         try {
-            db = new Database();
-            if (db.loginCheck(tfUsername.getText(), tfPassword.getText())) {
+            database = new Database();
+            if (database.loginCheck(tfUsername.getText(), tfPassword.getText())) {
                 primaryStage = (Stage) btLogin.getScene().getWindow();
                 primaryStage.close();
                 Lobby lobby = new Lobby(primaryStage);
