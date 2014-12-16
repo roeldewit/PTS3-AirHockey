@@ -75,8 +75,9 @@ public class LobbyController implements Initializable {
         primaryStage = (Stage) btStartGame.getScene().getWindow();
         primaryStage.close();
         try {
+            User user = db.getUser("TestUser5");
             ArrayList<Player> playerList = new ArrayList();
-            Player player = new Player(0,db.getUser("TestUser5"));
+            Player player = new Player(0,user);
             playerList.add(player);
             //Game g = new Game(primaryStage, false, false);
             Game multiGame = new Game(primaryStage,playerList,db.getUsers());
