@@ -79,6 +79,8 @@ public class LobbyController implements Initializable {
             ArrayList<Player> playerList = new ArrayList();
             Player player = new Player(0, user);
             playerList.add(player);
+            playerList.add(new Player(1, new User("TestUser6")));
+            playerList.add(new Player(2, new User("TestUser7")));
             //Game g = new Game(primaryStage, false, false);
             Game multiGame = new Game(primaryStage, playerList, new ArrayList());
         } catch (IOException | SQLException ex) {

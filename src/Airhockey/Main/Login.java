@@ -1,5 +1,6 @@
 package Airhockey.Main;
 
+import Airhockey.Properties.PropertiesManager;
 import Airhockey.Utils.Database;
 import java.io.IOException;
 import java.sql.SQLException;
@@ -89,6 +90,7 @@ public class Login extends Application {
     }
 
     public void startSingleGame() {
+        setDifficulty();
         primaryStage = (Stage) btLogin.getScene().getWindow();
         primaryStage.close();
         Game g = new Game(primaryStage, false, false);
@@ -117,5 +119,20 @@ public class Login extends Application {
         primaryStage = (Stage) btLogin.getScene().getWindow();
         primaryStage.close();
         CreateAccount createAccount = new CreateAccount(primaryStage);
+    }
+
+    private void setDifficulty() {
+        if (rbEasy.isSelected()) {
+            PropertiesManager.saveProperty("LEB-Difficulty", "EASY");
+            PropertiesManager.saveProperty("REB-Difficulty", "MEDIUM");
+        }
+        else if (rbNormal.isSelected()) {
+            PropertiesManager.saveProperty("LEB-Difficulty", "MEDIUM");
+            PropertiesManager.saveProperty("REB-Difficulty", "HARD");
+        }
+        else if (rbHard.isSelected()) {
+            PropertiesManager.saveProperty("LEB-Difficulty", "HARD");
+            PropertiesManager.saveProperty("REB-Difficulty", "VERY_HARD");
+        }
     }
 }

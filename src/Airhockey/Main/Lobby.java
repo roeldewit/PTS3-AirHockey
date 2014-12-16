@@ -47,7 +47,9 @@ public class Lobby {
     public Lobby(Stage primaryStage) {
         LobbySetUp(primaryStage);
         this.primaryStage = primaryStage;
-
+        database = new Database();
+        hashMapUsernameToUser = new HashMap();
+        
         try {
             users = database.getUsers();
 
@@ -118,9 +120,9 @@ public class Lobby {
         }
     }
 
-    private Game joinGame(int id) throws RemoteException {
+    private Game joinGame(int id , String usern) throws RemoteException {
         SerializableGame serializableGame = mainLobby.getWaitingGames().get(id);
-        mainLobby.joinGame(id);
+        mainLobby.joinGame(id, usern);
         ArrayList<Player> players = new ArrayList<>();
 
         int i = 0;
