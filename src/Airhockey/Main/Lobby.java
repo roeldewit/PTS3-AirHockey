@@ -32,8 +32,8 @@ public class Lobby {
 
     IMainLobby mainLobby;
     private Registry register;
-    private String ipMainServer;
-    private int portMainServer;
+    private String ipMainServer = "localhost";
+    private int portMainServer = 1099;
     Database database;
 
     HashMap<String, User> hashMapUsernameToUser;
@@ -87,6 +87,7 @@ public class Lobby {
         this.mainLobby = null;
 
         register = LocateRegistry.getRegistry(ipMainServer, portMainServer);
+        
 
         this.mainLobby = ((IMainLobby) register.lookup("MainLobby"));
     }
