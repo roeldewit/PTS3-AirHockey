@@ -5,6 +5,7 @@
  */
 package Airhockey.Main;
 
+import Airhockey.Renderer.Constants;
 import Airhockey.User.Player;
 import Airhockey.User.User;
 import Airhockey.Utils.Database;
@@ -17,9 +18,18 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
+import javafx.geometry.Insets;
+import javafx.geometry.Pos;
+import javafx.scene.Scene;
 import javafx.scene.control.*;
+import javafx.scene.layout.VBox;
+import javafx.scene.paint.Color;
+import javafx.scene.text.Font;
+import javafx.stage.Modality;
 import javafx.stage.Stage;
 
 /**
@@ -92,6 +102,7 @@ public class LobbyController implements Initializable {
         if (tfChatbox.getText() != "") {
             chatItems.add(tfChatbox.getText());
             lvChatbox.setItems(chatItems);
+            tfChatbox.clear();
         }
     }
 

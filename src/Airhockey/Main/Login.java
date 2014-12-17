@@ -1,6 +1,7 @@
 package Airhockey.Main;
 
 import Airhockey.Properties.PropertiesManager;
+import Airhockey.Renderer.Constants;
 import Airhockey.Utils.Database;
 import java.io.IOException;
 import java.rmi.NotBoundException;
@@ -9,11 +10,19 @@ import java.sql.SQLException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javafx.application.Application;
+import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
+import javafx.geometry.Insets;
+import javafx.geometry.Pos;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
+import javafx.scene.layout.VBox;
+import javafx.scene.paint.Color;
+import javafx.scene.text.Font;
+import javafx.stage.Modality;
 import javafx.stage.Stage;
 
 /**
@@ -80,10 +89,11 @@ public class Login extends Application {
     }
 
     public void startSingleGame() {
-        setDifficulty();
-        primaryStage = (Stage) btLogin.getScene().getWindow();
-        primaryStage.close();
-        Game g = new Game(primaryStage, false, false);
+        if (setDifficulty()) {
+            primaryStage = (Stage) btLogin.getScene().getWindow();
+            primaryStage.close();
+            Game g = new Game(primaryStage, false, false);
+        }
     }
 
     public void actionlogin() {
@@ -95,14 +105,15 @@ public class Login extends Application {
                 Lobby lobby = new Lobby(primaryStage);
                 System.out.println("User: " + tfUsername.getText() + " logged in!");
             } else {
-                primaryStage = (Stage) btLogin.getScene().getWindow();
-                primaryStage.close();
-                Lobby lobby = new Lobby(primaryStage);
+//                primaryStage = (Stage) btLogin.getScene().getWindow();
+//                primaryStage.close();
+//                Lobby lobby = new Lobby(primaryStage);
+                showPopupWindow("Invalid login combination!", "Ok");
                 System.out.println("Logged in (no user)!");
             }
-        } catch (SQLException | IOException ex) {
+        } catch (SQLException | IOException | IllegalArgumentException ex) {
             Logger.getLogger(Login.class.getName()).log(Level.SEVERE, null, ex);
-        } catch(NotBoundException ex){
+        } catch (NotBoundException ex) {
             // to do add a proper notification
         }
     }
@@ -113,16 +124,54 @@ public class Login extends Application {
         CreateAccount createAccount = new CreateAccount(primaryStage);
     }
 
-    private void setDifficulty() {
+    private boolean setDifficulty() {
         if (rbEasy.isSelected()) {
             PropertiesManager.saveProperty("LEB-Difficulty", "EASY");
             PropertiesManager.saveProperty("REB-Difficulty", "MEDIUM");
+            return true;
         } else if (rbNormal.isSelected()) {
             PropertiesManager.saveProperty("LEB-Difficulty", "MEDIUM");
             PropertiesManager.saveProperty("REB-Difficulty", "HARD");
+            return true;
         } else if (rbHard.isSelected()) {
             PropertiesManager.saveProperty("LEB-Difficulty", "HARD");
             PropertiesManager.saveProperty("REB-Difficulty", "VERY_HARD");
+            return true;
+        } else {
+            showPopupWindow("No difficulty selected!", "Ok");
+            return false;
         }
+    }
+
+    protected void showPopupWindow(String message, String buttonText) {
+        final Stage dialogStage = new Stage();
+        dialogStage.initModality(Modality.WINDOW_MODAL);
+        dialogStage.initOwner(tfUsername.getScene().getWindow());
+        dialogStage.centerOnScreen();
+
+        Button okButton = new Button(buttonText);
+        okButton.setOnAction(new EventHandler<ActionEvent>() {
+
+            @Override
+            public void handle(ActionEvent arg0) {
+                dialogStage.close();
+            }
+        });
+
+        Label label = new Label(message);
+        label.setFont(Font.font("Roboto", 24.0));
+        label.setTextFill(Color.web(Constants.COLOR_GREEN));
+        label.setPadding(new Insets(0, 0, 20, 0));
+        label.relocate(100, 10);
+
+        VBox vBox = new VBox();
+        vBox.getChildren().add(label);
+        vBox.getChildren().add(okButton);
+        vBox.setAlignment(Pos.CENTER);
+        vBox.setPadding(new Insets(20, 40, 20, 40));
+
+        Scene dialogScene = new Scene(vBox);
+        dialogStage.setScene(dialogScene);
+        dialogStage.show();
     }
 }
