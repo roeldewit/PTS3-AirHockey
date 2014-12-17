@@ -35,13 +35,22 @@ public class Login extends Application {
     Button btLogin;
 
     @FXML
-    RadioButton rbEasy;
+    RadioButton rbEasyLeft;
+    @FXML
+    RadioButton rbNormalLeft;
+    @FXML
+    RadioButton rbHardLeft;
+    @FXML
+    RadioButton rbVeryHardLeft;
 
     @FXML
-    RadioButton rbNormal;
-
+    RadioButton rbEasyRight;
     @FXML
-    RadioButton rbHard;
+    RadioButton rbNormalRight;
+    @FXML
+    RadioButton rbHardRight;
+    @FXML
+    RadioButton rbVeryHardRight;
 
     @FXML
     TextField tfUsername;
@@ -61,16 +70,6 @@ public class Login extends Application {
 
         Login(primaryStage);
         this.primaryStage = primaryStage;
-
-        rbEasy = new RadioButton();
-        rbEasy.setToggleGroup(group);
-        rbEasy.setSelected(true);
-
-        rbNormal = new RadioButton();
-        rbNormal.setToggleGroup(group);
-
-        rbHard = new RadioButton();
-        rbHard.setToggleGroup(group);
     }
 
     public void Login(Stage primaryStage) {
@@ -89,11 +88,10 @@ public class Login extends Application {
     }
 
     public void startSingleGame() {
-        if (setDifficulty()) {
-            primaryStage = (Stage) btLogin.getScene().getWindow();
-            primaryStage.close();
-            Game g = new Game(primaryStage, false, false);
-        }
+        setDifficulty();
+        primaryStage = (Stage) btLogin.getScene().getWindow();
+        primaryStage.close();
+        Game g = new Game(primaryStage, false, false);
     }
 
     public void actionlogin() {
@@ -126,22 +124,26 @@ public class Login extends Application {
         CreateAccount createAccount = new CreateAccount(primaryStage);
     }
 
-    private boolean setDifficulty() {
-        if (rbEasy.isSelected()) {
+    private void setDifficulty() {
+        if (rbEasyLeft.isSelected()) {
             PropertiesManager.saveProperty("LEB-Difficulty", "EASY");
-            PropertiesManager.saveProperty("REB-Difficulty", "MEDIUM");
-            return true;
-        } else if (rbNormal.isSelected()) {
+        } else if (rbNormalLeft.isSelected()) {
             PropertiesManager.saveProperty("LEB-Difficulty", "MEDIUM");
-            PropertiesManager.saveProperty("REB-Difficulty", "HARD");
-            return true;
-        } else if (rbHard.isSelected()) {
+        } else if (rbHardLeft.isSelected()) {
             PropertiesManager.saveProperty("LEB-Difficulty", "HARD");
+        } else if (rbVeryHardLeft.isSelected()) {
+            PropertiesManager.saveProperty("LEB-Difficulty", "VERY_HARD");
+            System.out.println("vh");
+        }
+
+        if (rbEasyRight.isSelected()) {
+            PropertiesManager.saveProperty("REB-Difficulty", "EASY");
+        } else if (rbNormalRight.isSelected()) {
+            PropertiesManager.saveProperty("REB-Difficulty", "MEDIUM");
+        } else if (rbHardRight.isSelected()) {
+            PropertiesManager.saveProperty("REB-Difficulty", "HARD");
+        } else if (rbVeryHardRight.isSelected()) {
             PropertiesManager.saveProperty("REB-Difficulty", "VERY_HARD");
-            return true;
-        } else {
-            showPopupWindow("No difficulty selected!", "Ok");
-            return false;
         }
     }
 
