@@ -111,10 +111,12 @@ public class Login extends Application {
                 showPopupWindow("Invalid login combination!", "Ok");
                 System.out.println("Logged in (no user)!");
             }
-        } catch (SQLException | IOException | IllegalArgumentException ex) {
+        } catch (SQLException | IOException ex) {
             Logger.getLogger(Login.class.getName()).log(Level.SEVERE, null, ex);
         } catch (NotBoundException ex) {
             // to do add a proper notification
+        } catch (IllegalArgumentException ex) {
+            showPopupWindow("Field is empty!", "Ok");
         }
     }
 
