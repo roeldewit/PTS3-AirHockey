@@ -88,7 +88,7 @@ public class Login extends Application {
     }
 
     public void startSingleGame() {
-        setDifficulty();
+        //setDifficulty();
         primaryStage = (Stage) btLogin.getScene().getWindow();
         primaryStage.close();
         Game g = new Game(primaryStage, false, false);

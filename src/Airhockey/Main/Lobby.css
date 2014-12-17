@@ -1,14 +1,18 @@
+/*
+To change this license header, choose License Headers in Project Properties.
+To change this template file, choose Tools | Templates
+and open the template in the editor.
+*/
 /* 
-    Created on : 17-dec-2014, 11:02:32
+    Created on : 17-dec-2014, 12:53:02
     Author     : Sam
 */
-
 .root{
     -fx-background-color: #373737;
 }
 
 .label{
-    -fx-font: 18px "Roboto";
+    -fx-font: 26px "Roboto";
     -fx-text-fill: #33CCFF;
     -fx-alignment: CENTER;
     -fx-effect: dropshadow( gaussian , rgba(0,0,0,0.5) , 2,2,2,2 );
@@ -43,3 +47,4 @@
 .radio-button:hover{
     -fx-color: #A82B34;
 }
+
