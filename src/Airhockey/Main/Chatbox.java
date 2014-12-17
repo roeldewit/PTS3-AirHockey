@@ -1,6 +1,5 @@
 package Airhockey.Main;
 
-import Airhockey.Rmi.SerializableChatBox;
 import java.util.ArrayList;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;

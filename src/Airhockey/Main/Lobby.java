@@ -43,11 +43,17 @@ public class Lobby {
     public Lobby(Stage primaryStage) throws RemoteException, NotBoundException, IOException, SQLException {
         LobbySetUp(primaryStage);
         this.primaryStage = primaryStage;
-        database = new Database();
+//        database = new Database();
         hashMapUsernameToUser = new HashMap();
 
-        users = database.getUsers();
-
+        
+        users = new ArrayList<>();
+        
+        users.add(new User("Jan"));
+        users.add(new User("Piet"));
+        users.add(new User("Henk"));
+//        users = database.getUsers();
+//
         for (User dbuser : users) {
             hashMapUsernameToUser.put(dbuser.getUsername(), dbuser);
         }
@@ -87,13 +93,12 @@ public class Lobby {
         this.mainLobby = null;
 
         register = LocateRegistry.getRegistry(ipMainServer, portMainServer);
-        
 
         this.mainLobby = ((IMainLobby) register.lookup("MainLobby"));
     }
 
-    private void getInitialChatbox() {
-        SerializableChatBox serializableChatBox = mainLobby.getChatBox();
+    private void getInitialChatbox() throws RemoteException {
+        SerializableChatBox1 serializableChatBox = mainLobby.getChatBox();
         chatbox = new Chatbox();
 
         for (SerializableChatBoxLine serializableChatBoxLine : serializableChatBox.lines) {
@@ -119,15 +124,15 @@ public class Lobby {
         return new Game(primaryStage, serializableGame.hostIP, 1099, players, null);
     }
 
-    private ArrayList<SerializableGame> getRunningGames() {
+    private ArrayList<SerializableGame> getRunningGames() throws RemoteException {
         return mainLobby.getBusyGames();
     }
 
-    private ArrayList<SerializableGame> getWaitingGames() {
+    private ArrayList<SerializableGame> getWaitingGames() throws RemoteException {
         return mainLobby.getWaitingGames();
     }
 
-    private void startGame(SerializableGame serializableGame) {
+    private void startGame(SerializableGame serializableGame) throws RemoteException {
         mainLobby.startGame(serializableGame);
     }
 
