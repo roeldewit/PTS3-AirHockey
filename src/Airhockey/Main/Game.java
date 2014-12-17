@@ -45,9 +45,9 @@ public class Game {
         this.isMultiplayer = isMultiplayer;
         players = new ArrayList<>();
 
-        addPlayer(new User("Henk"));
-        addPlayer(new User("Piet"));
-        addPlayer(new User("DienMam"));
+        addPlayer(new User("Sam"));
+        addPlayer(new User("Com1"));
+        addPlayer(new User("Com2"));
 
         renderer = new Renderer(primaryStage, this, isMultiplayer);
 
@@ -121,7 +121,7 @@ public class Game {
                 System.out.println("pi:" + playerId);
                 bat.setPlayer(player);
                 //bat.getPlayer();
-                System.out.println("bp: " +bat.getPlayer());
+                System.out.println("bp: " + bat.getPlayer());
             }
         }
     }

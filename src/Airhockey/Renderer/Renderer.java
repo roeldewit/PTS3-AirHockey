@@ -137,6 +137,7 @@ public class Renderer extends BaseRenderer {
         startButton.setLayoutX(30);
         startButton.setLayoutY((45));
         startButton.setText("Start");
+        startButton.setStyle("-fx-font: 14px Roboto;  -fx-padding: 5 10 5 10; -fx-background-color: #D23641; -fx-text-fill: white;  -fx-effect: dropshadow( gaussian , rgba(0,0,0,0.5) , 1,1,1,1 );");
         startButton.setOnAction((ActionEvent event) -> {
             canUpdate = true;
             timeline.playFromStart();

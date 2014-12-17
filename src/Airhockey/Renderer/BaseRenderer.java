@@ -101,13 +101,13 @@ class BaseRenderer implements IRenderer {
     }
 
     protected void createScreenStuff() {
-        player1NameLabel = new Label(game.getUsername(1) + ": ");
-        player2NameLabel = new Label(game.getUsername(2) + ": ");
-        player3NameLabel = new Label(game.getUsername(3) + ": ");
+        player1NameLabel = new Label(game.getUsername(1).toUpperCase() + ": ");
+        player2NameLabel = new Label(game.getUsername(2).toUpperCase() + ": ");
+        player3NameLabel = new Label(game.getUsername(3).toUpperCase() + ": ");
         player1ScoreLabel = new Label("20");
         player2ScoreLabel = new Label("20");
         player3ScoreLabel = new Label("20");
-        roundTextLabel = new Label("Round:");
+        roundTextLabel = new Label("ROUND:");
         roundNumberLabel = new Label("1");
 
         player1NameLabel.setFont(Font.font("Roboto", FontWeight.BOLD, 24.0));
@@ -122,7 +122,11 @@ class BaseRenderer implements IRenderer {
         player1NameLabel.setTextFill(Color.web(Constants.COLOR_RED));
         player2NameLabel.setTextFill(Color.web(Constants.COLOR_BLUE));
         player3NameLabel.setTextFill(Color.web(Constants.COLOR_GREEN));
+        player1ScoreLabel.setTextFill(Color.WHITE);
+        player2ScoreLabel.setTextFill(Color.WHITE);
+        player3ScoreLabel.setTextFill(Color.WHITE);
         roundTextLabel.setTextFill(Color.web(Constants.COLOR_ORANGE));
+        roundNumberLabel.setTextFill(Color.WHITE);
 
         player1NameLabel.relocate(850, 10);
         player2NameLabel.relocate(850, 40);
@@ -131,7 +135,7 @@ class BaseRenderer implements IRenderer {
         player2ScoreLabel.relocate(970, 40);
         player3ScoreLabel.relocate(970, 70);
         roundTextLabel.relocate(30, 10);
-        roundNumberLabel.relocate(120, 10);
+        roundNumberLabel.relocate(140, 10);
 
         root.getChildren().addAll(player1NameLabel, player2NameLabel, player3NameLabel, player1ScoreLabel, player2ScoreLabel, player3ScoreLabel);
         root.getChildren().addAll(roundTextLabel, roundNumberLabel);
@@ -190,6 +194,7 @@ class BaseRenderer implements IRenderer {
         TextField textField = new TextField();
         Button btn = new Button();
         btn.setText("Send");
+        btn.setStyle("-fx-font: 14px Roboto;  -fx-padding: 5 10 5 10; -fx-background-color: #D23641; -fx-text-fill: white;  -fx-effect: dropshadow( gaussian , rgba(0,0,0,0.5) , 1,1,1,1 );");
 
         BorderPane chatBoxBorderPane = new BorderPane();
         HBox bottom = HBoxBuilder.create().children(textField, btn).build();
