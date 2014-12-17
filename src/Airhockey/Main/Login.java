@@ -68,11 +68,12 @@ public class Login extends Application {
     @Override
     public void start(Stage primaryStage) {
 
-        Login(primaryStage);
         this.primaryStage = primaryStage;
+        Login();
     }
 
-    public void Login(Stage primaryStage) {
+    public void Login() {
+        primaryStage = new Stage();
         Parent root = null;
 
         try {
@@ -84,11 +85,10 @@ public class Login extends Application {
         Scene scene = new Scene(root);
         primaryStage.setScene(scene);
         primaryStage.show();
-
     }
 
     public void startSingleGame() {
-        //setDifficulty();
+        setDifficulty();
         primaryStage = (Stage) btLogin.getScene().getWindow();
         primaryStage.close();
         Game g = new Game(primaryStage, false, false);

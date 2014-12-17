@@ -1,8 +1,3 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package Airhockey.Main;
 
 import Airhockey.Renderer.Constants;
@@ -11,8 +6,6 @@ import java.io.IOException;
 import java.net.URL;
 import java.sql.SQLException;
 import java.util.ResourceBundle;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
@@ -63,7 +56,7 @@ public class CreateAccountController implements Initializable {
                 Stage primaryStage = (Stage) tfPassword.getScene().getWindow();
                 primaryStage.close();
                 Login login = new Login();
-                login.Login(primaryStage);
+                login.Login();
                 showPopupWindow("User: " + tfUsername.getText() + " created!", "Ok");
             } else {
                 showPopupWindow("User not created!", "Ok");
@@ -78,7 +71,7 @@ public class CreateAccountController implements Initializable {
         Stage primaryStage = (Stage) tfPassword.getScene().getWindow();
         primaryStage.close();
         Login login = new Login();
-        login.Login(primaryStage);
+        login.Login();
     }
 
     protected void showPopupWindow(String message, String buttonText) {

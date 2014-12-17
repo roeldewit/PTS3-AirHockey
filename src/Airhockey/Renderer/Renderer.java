@@ -3,6 +3,7 @@ package Airhockey.Renderer;
 import Airhockey.Elements.*;
 import Airhockey.Host.RmiServer;
 import Airhockey.Main.Game;
+import Airhockey.Main.Login;
 import Airhockey.Properties.PropertiesManager;
 import Airhockey.Utils.KeyListener;
 import Airhockey.Utils.Utils;
@@ -90,9 +91,6 @@ public class Renderer extends BaseRenderer {
             shutDown();
             primaryStage.close();
         });
-
-        PropertiesManager.saveProperty("LEB-Difficulty", "MEDIUM");
-        PropertiesManager.saveProperty("REB-Difficulty", "VERY_HARD");
 
         final Scene scene = new Scene(mainRoot, Utils.WIDTH, Utils.HEIGHT, Color.web(Constants.COLOR_GRAY));
 
@@ -360,6 +358,11 @@ public class Renderer extends BaseRenderer {
         canUpdate = false;
         timeline.stop();
         threadPool.shutdownNow();
+
+        primaryStage.close();
+        Login login = new Login();
+        login.Login();
+        System.out.println("shutdonwl");
     }
 
     private class BatPuckContactListener implements ContactListener {

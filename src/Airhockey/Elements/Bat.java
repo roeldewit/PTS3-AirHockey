@@ -82,7 +82,7 @@ public class Bat {
                 image = new Image(getClass().getResourceAsStream("Images/RedBatSmaller.png"), diameter, diameter, false, false);
                 break;
             case Constants.COLOR_BLUE:
-                image = new Image(getClass().getResourceAsStream("Images/BlueBatSmaller.png"), diameter, diameter, false, false);
+                image = new Image(getClass().getResourceAsStream("Images/LightBlueBatSmaller.png"), diameter, diameter, false, false);
                 break;
             default:
                 image = new Image(getClass().getResourceAsStream("Images/GreenBatSmaller.png"), diameter, diameter, false, false);
