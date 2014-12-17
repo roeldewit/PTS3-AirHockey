@@ -12,7 +12,7 @@ and open the template in the editor.
 }
 
 .label{
-    -fx-font: 26px "Roboto";
+    -fx-font: 18px "Roboto";
     -fx-text-fill: #33CCFF;
     -fx-alignment: CENTER;
     -fx-effect: dropshadow( gaussian , rgba(0,0,0,0.5) , 2,2,2,2 );
