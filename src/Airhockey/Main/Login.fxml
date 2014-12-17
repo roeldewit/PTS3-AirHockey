@@ -29,13 +29,14 @@
                 <RadioButton fx:id="rbNormalLeft" layoutX="80.0" layoutY="215.0" mnemonicParsing="false"    text="   NORMAL" toggleGroup="$RB_LEFT_Group"/>
                 <RadioButton fx:id="rbHardLeft" layoutX="80.0" layoutY="250.0" mnemonicParsing="false"      text="      HARD" toggleGroup="$RB_LEFT_Group" />
                 <RadioButton fx:id="rbVeryHardLeft" layoutX="80.0" layoutY="285.0" mnemonicParsing="false"  text=" VERY HARD" toggleGroup="$RB_LEFT_Group" />
-                <Button fx:id="btStartSingleGameLeft" layoutX="90.0" layoutY="332.0" mnemonicParsing="false" onAction="#startSingleGame" prefHeight="31.0"  text="START GAME" />
                 
  
-                <RadioButton fx:id="rbEasyRight" layoutX="190.0" layoutY="180.0" mnemonicParsing="false"  selected="true" toggleGroup="$RB_Group" />
-                <RadioButton fx:id="rbNormaRight" layoutX="190.0" layoutY="215.0" mnemonicParsing="false" toggleGroup="$RB_Group"/>
-                <RadioButton fx:id="rbHardRight" layoutX="190.0" layoutY="250.0" mnemonicParsing="false" toggleGroup="$RB_Group" />
-                <RadioButton fx:id="rbVeryHardRight" layoutX="190.0" layoutY="285.0" mnemonicParsing="false"  toggleGroup="$RB_Group" />
+                <RadioButton fx:id="rbEasyRight" layoutX="190.0" layoutY="180.0" mnemonicParsing="false" text=" "  selected="true" toggleGroup="$RB_Group" />
+                <RadioButton fx:id="rbNormaRight" layoutX="190.0" layoutY="215.0" mnemonicParsing="false" text=" "  toggleGroup="$RB_Group"/>
+                <RadioButton fx:id="rbHardRight" layoutX="190.0" layoutY="250.0" mnemonicParsing="false" text=" "  toggleGroup="$RB_Group" />
+                <RadioButton fx:id="rbVeryHardRight" layoutX="190.0" layoutY="285.0" mnemonicParsing="false" text=" "   toggleGroup="$RB_Group" />
+                
+                <Button fx:id="btStartSingleGameLeft" layoutX="90.0" layoutY="332.0" mnemonicParsing="false" onAction="#startSingleGame" prefHeight="31.0"  text="START GAME" />
             </children>
         </AnchorPane>
         <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="160.0" prefWidth="100.0">
