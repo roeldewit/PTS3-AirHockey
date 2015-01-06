@@ -56,7 +56,7 @@ public class Login extends Application {
     TextField tfUsername;
 
     @FXML
-    TextField tfPassword;
+    PasswordField tfPassword;
 
     @FXML
     Button btStartSingleGame;
@@ -127,24 +127,27 @@ public class Login extends Application {
     private void setDifficulty() {
         if (rbEasyLeft.isSelected()) {
             PropertiesManager.saveProperty("LEB-Difficulty", "EASY");
-        } else if (rbNormalLeft.isSelected()) {
-            PropertiesManager.saveProperty("LEB-Difficulty", "MEDIUM");
-        } else if (rbHardLeft.isSelected()) {
-            PropertiesManager.saveProperty("LEB-Difficulty", "HARD");
-        } else if (rbVeryHardLeft.isSelected()) {
-            PropertiesManager.saveProperty("LEB-Difficulty", "VERY_HARD");
-            System.out.println("vh");
         }
 
+//        else if (rbNormalLeft.isSelected()) {
+//            PropertiesManager.saveProperty("LEB-Difficulty", "MEDIUM");
+//        } else if (rbHardLeft.isSelected()) {
+//            PropertiesManager.saveProperty("LEB-Difficulty", "HARD");
+//        } else if (rbVeryHardLeft.isSelected()) {
+//            PropertiesManager.saveProperty("LEB-Difficulty", "VERY_HARD");
+//            System.out.println("vh");
+//        }
         if (rbEasyRight.isSelected()) {
             PropertiesManager.saveProperty("REB-Difficulty", "EASY");
-        } else if (rbNormalRight.isSelected()) {
-            PropertiesManager.saveProperty("REB-Difficulty", "MEDIUM");
-        } else if (rbHardRight.isSelected()) {
-            PropertiesManager.saveProperty("REB-Difficulty", "HARD");
-        } else if (rbVeryHardRight.isSelected()) {
-            PropertiesManager.saveProperty("REB-Difficulty", "VERY_HARD");
         }
+
+//        else if (rbNormalRight.isSelected()) {
+//            PropertiesManager.saveProperty("REB-Difficulty", "MEDIUM");
+//        } else if (rbHardRight.isSelected()) {
+//            PropertiesManager.saveProperty("REB-Difficulty", "HARD");
+//        } else if (rbVeryHardRight.isSelected()) {
+//            PropertiesManager.saveProperty("REB-Difficulty", "VERY_HARD");
+//        }
     }
 
     protected void showPopupWindow(String message, String buttonText) {

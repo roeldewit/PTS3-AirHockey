@@ -52,7 +52,7 @@
                     </font>
                 </Label>
                 <TextField fx:id="tfUsername" layoutX="73.0" layoutY="207.0" promptText="Username" />
-                <TextField fx:id="tfPassword" layoutX="73.0" layoutY="270.0" promptText="Password" />
+                <PasswordField fx:id="tfPassword" layoutX="73.0" layoutY="270.0" promptText="Password" />
                 <Button fx:id="btLogin" layoutX="26.0" layoutY="331.0" mnemonicParsing="false" onAction="#actionlogin" prefHeight="31.0" prefWidth="94.0" text="LOGIN" />
                 <Button fx:id="btCreateAccount" layoutX="150.0" layoutY="331.0" mnemonicParsing="false" onAction="#actionCreateAccount" prefHeight="31.0"  text="CREATE ACCOUNT" />
             </children>
