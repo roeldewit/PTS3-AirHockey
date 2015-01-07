@@ -2,6 +2,9 @@ package Airhockey.Utils;
 
 import Airhockey.Client.ClientController;
 import Airhockey.Renderer.ClientRenderer;
+import java.rmi.RemoteException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javafx.event.EventHandler;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
@@ -26,19 +29,35 @@ public class ClientKeyListener implements EventHandler<KeyEvent> {
             if (event.getEventType().equals(KeyEvent.KEY_PRESSED)) {
                 keyAlreadyPressed = true;
                 if (keyCode == KeyCode.LEFT) {
-                    clientcontroller.moveLeft();
+                    try {
+                        clientcontroller.moveLeft();
+                    } catch (RemoteException ex) {
+                        Logger.getLogger(ClientKeyListener.class.getName()).log(Level.SEVERE, null, ex);
+                    }
                 } else if (keyCode == KeyCode.RIGHT) {
-                    clientcontroller.moveRight();
+                    try {
+                        clientcontroller.moveRight();
 //                    renderer.startTimer();
+                    } catch (RemoteException ex) {
+                        Logger.getLogger(ClientKeyListener.class.getName()).log(Level.SEVERE, null, ex);
+                    }
                 }
             }
         }
         if (event.getEventType().equals(KeyEvent.KEY_RELEASED)) {
             System.out.println("sfasdf");
             if (keyCode == KeyCode.LEFT) {
-                clientcontroller.stopMovement();
+                try {
+                    clientcontroller.stopMovement();
+                } catch (RemoteException ex) {
+                    Logger.getLogger(ClientKeyListener.class.getName()).log(Level.SEVERE, null, ex);
+                }
             } else if (keyCode == KeyCode.RIGHT) {
-                clientcontroller.stopMovement();
+                try {
+                    clientcontroller.stopMovement();
+                } catch (RemoteException ex) {
+                    Logger.getLogger(ClientKeyListener.class.getName()).log(Level.SEVERE, null, ex);
+                }
             }
             keyAlreadyPressed = false;
         }

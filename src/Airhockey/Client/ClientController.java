@@ -70,7 +70,7 @@ public class ClientController {
         }
     }
 
-    public void moveLeft() {
+    public void moveLeft() throws RemoteException{
         if (playerNumber == 1) {
             controlPlayer1.movePlayer1BatUp();
         } else {
@@ -78,7 +78,7 @@ public class ClientController {
         }
     }
 
-    public void moveRight() {
+    public void moveRight() throws RemoteException{
         if (playerNumber == 1) {
             controlPlayer1.movePlayer1BatDown();
         } else {
@@ -86,7 +86,7 @@ public class ClientController {
         }
     }
 
-    public void stopMovement() {
+    public void stopMovement() throws RemoteException{
         if (playerNumber == 1) {
             controlPlayer1.stopPlayer1Bat();
         } else {
@@ -94,7 +94,7 @@ public class ClientController {
         }
     }
     
-    public int getPlayerNumber(){
+    public int getPlayerNumber() throws RemoteException{
         return playerNumber; 
     }
 

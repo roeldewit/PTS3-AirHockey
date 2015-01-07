@@ -7,7 +7,11 @@ import Airhockey.Main.*;
 import Airhockey.Rmi.GameData;
 import Airhockey.Rmi.Location;
 import Airhockey.Utils.Utils;
+import java.rmi.RemoteException;
+import java.util.Timer;
+import java.util.TimerTask;
 import javafx.animation.*;
+import javafx.application.Platform;
 import javafx.scene.Scene;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.paint.Color;
@@ -29,7 +33,7 @@ public final class ClientRenderer extends BaseRenderer {
 
     private final int playerNumber;
 
-    public ClientRenderer(Stage primaryStage, Game game) {
+    public ClientRenderer(Stage primaryStage, Game game) throws RemoteException {
         super(primaryStage, game);
 
         clientController = game.getClientController();
@@ -72,28 +76,29 @@ public final class ClientRenderer extends BaseRenderer {
 
     }
 
-//    public void startTimer() {
-//        Timer t = new Timer();
-//        t.scheduleAtFixedRate(new timerTaskZ(), 0, 1000 / 60);
-//    }
-//
-//    public class timerTaskZ extends TimerTask {
-//
-//        @Override
-//        public void run() {
-//
-//            Platform.runLater(new Runnable() {
-//                @Override
-//                public void run() {
-//                    leftBat.setPosition(xPosition, yPosition);
-//
-//                    bat.setPosition(rendererUtilities.batPositionSideToBottom(yPosition), 600);
-//                    yPosition++;
-//
-//                }
-//            });
-//        }
-//    }
+    public void startTimer() {
+        Timer t = new Timer();
+        t.scheduleAtFixedRate(new timerTaskZ(), 0, 1000 / 60);
+    }
+
+    public class timerTaskZ extends TimerTask {
+
+        @Override
+        public void run() {
+
+            Platform.runLater(new Runnable() {
+                @Override
+                public void run() {
+                    leftBat.setPosition(xPosition, yPosition);
+
+                    bat.setPosition(rendererUtilities.batPositionSideToBottom(yPosition), 600);
+                    yPosition++;
+
+                }
+            });
+        }
+    }
+
     private void createMovableItems() {
         puck = new Puck(50, 45);
 
