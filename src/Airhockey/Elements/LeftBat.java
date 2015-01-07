@@ -18,6 +18,7 @@ public class LeftBat extends Bat {
         super(postionX, postionY, type);
 
         String difficulty = PropertiesManager.loadProperty("LEB-Difficulty");
+        System.out.println("L:" + difficulty);
         switch (difficulty) {
             case "EASY":
                 speed = 8.0f;

@@ -3,6 +3,7 @@ package Airhockey.Renderer;
 import Airhockey.Elements.*;
 import Airhockey.Host.RmiServer;
 import Airhockey.Main.Game;
+import Airhockey.Main.Login;
 import Airhockey.Properties.PropertiesManager;
 import Airhockey.Utils.KeyListener;
 import Airhockey.Utils.Utils;
@@ -70,7 +71,7 @@ public class Renderer extends BaseRenderer {
         super(primaryStage, game);
         this.batController = new BatController(this);
         this.isMultiplayer = false;
-        this.threadPool = Executors.newFixedThreadPool(3);
+        this.threadPool = Executors.newCachedThreadPool();
 
         if (isMultiplayer) {
             rmiServer = game.getRmiServer();
@@ -91,9 +92,6 @@ public class Renderer extends BaseRenderer {
             primaryStage.close();
         });
 
-        PropertiesManager.saveProperty("LEB-Difficulty", "MEDIUM");
-        PropertiesManager.saveProperty("REB-Difficulty", "VERY_HARD");
-
         final Scene scene = new Scene(mainRoot, Utils.WIDTH, Utils.HEIGHT, Color.web(Constants.COLOR_GRAY));
 
         KeyListener keyListener = new KeyListener(batController);
@@ -112,6 +110,8 @@ public class Renderer extends BaseRenderer {
         timeline = new Timeline();
         timeline.setCycleCount(Timeline.INDEFINITE);
         timeline.getKeyFrames().add(frame);
+
+        PropertiesManager.saveProperty("REB-Difficulty", "HARD");
 
         drawShapes();
         createFixedItems();
@@ -200,10 +200,12 @@ public class Renderer extends BaseRenderer {
         @Override
         public void handle(ActionEvent event) {
             //Create time step. Set Iteration count 8 for velocity and 3 for positions
-            Utils.world.step(1.0f / 40.f, 8, 3);
+            if (!threadPool.isShutdown()) {
+                Utils.world.step(1.0f / 40.f, 8, 3);
 
-            threadPool.execute(new CalulationTask());
-            checkGoal();
+                threadPool.execute(new CalulationTask());
+
+            }
         }
     }
 
@@ -248,28 +250,32 @@ public class Renderer extends BaseRenderer {
                 canCorrectPuckSpeed = true;
             }
 
-            threadCallback();
+            checkGoal();
             return null;
+        }
+
+        @Override
+        protected void succeeded() {
+            super.succeeded();
+            threadCallback();
         }
     }
 
     private synchronized void threadCallback() {
-        Platform.runLater(() -> {
-            if (canUpdate) {
-                puck.setPosition(puckBodyPosX, puckBodyPosY);
-                bat.setPosition(batBodyPosX, batBodyPosY);
+        if (canUpdate) {
+            puck.setPosition(puckBodyPosX, puckBodyPosY);
+            bat.setPosition(batBodyPosX, batBodyPosY);
 
-                batController.controlCenterBat(batBodyPosX);
+            batController.controlCenterBat(batBodyPosX);
 
-                if (isMultiplayer) {
-                    batController.controlLeftBat(Utils.toPixelPosY(leftBatBody.getPosition().y));
-                    batController.controlRightBat(Utils.toPixelPosY(rightBatBody.getPosition().y));
-                } else {
-                    moveLeftEnemyBat(puckBodyPosY);
-                    moveRightEnemyBat(puckBodyPosY);
-                }
+            if (isMultiplayer) {
+                batController.controlLeftBat(Utils.toPixelPosY(leftBatBody.getPosition().y));
+                batController.controlRightBat(Utils.toPixelPosY(rightBatBody.getPosition().y));
+            } else {
+                moveLeftEnemyBat(puckBodyPosY);
+                moveRightEnemyBat(puckBodyPosY);
             }
-        });
+        }
     }
 
     private void moveLeftEnemyBat(float puckBodyPosY) {
@@ -360,6 +366,11 @@ public class Renderer extends BaseRenderer {
         canUpdate = false;
         timeline.stop();
         threadPool.shutdownNow();
+
+        primaryStage.close();
+        Login login = new Login();
+        login.Login();
+        System.out.println("shutdonwl");
     }
 
     private class BatPuckContactListener implements ContactListener {

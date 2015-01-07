@@ -18,6 +18,7 @@ public class RightBat extends Bat {
         super(postionX, postionY, type);
 
         String difficulty = PropertiesManager.loadProperty("REB-Difficulty");
+        System.out.println("R:" + difficulty);
         switch (difficulty) {
             case "EASY":
                 speed = 8.0f;
