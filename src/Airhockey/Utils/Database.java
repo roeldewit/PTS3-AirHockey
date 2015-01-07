@@ -43,17 +43,16 @@ public class Database {
         }
 
         this.properties = props;
-        configure(props);
+        configure();
     }
 
     /**
      * Configure the database connection
      *
-     * @param props Properties
      * @return Boolean indicating if the connection is successful configured
      * @throws IOException IO Exception
      */
-    private boolean configure(Properties props) throws IOException {
+    private boolean configure() throws IOException {
         boolean result;
 
         try {
